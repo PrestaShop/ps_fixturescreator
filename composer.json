@@ -1,0 +1,23 @@
+{
+    "name": "prestashop/ps_fixtures_creator",
+  "license": "AFL-3.0",
+  "authors": [
+        {
+            "name": "Fabien Papet",
+            "email": "FabienPapet@users.noreply.github.com"
+        }
+    ],
+    "autoload": {
+      "psr-4": {
+        "PrestaShop\\Module\\PsFixturesCreator\\": "src/"
+      }
+    },
+    "require": {
+        "fakerphp/faker": "^1.21.0",
+        "symfony/console": "^4.4"
+    },
+  "config": {
+    "prepend-autoloader": false
+  },
+  "type": "prestashop-module"
+}

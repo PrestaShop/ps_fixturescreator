@@ -1,0 +1,3 @@
+services:
+    PrestaShop\Module\PsFixturesCreator\Command\ShopCreatorCommand:
+        autoconfigure: true
