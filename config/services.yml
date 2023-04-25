@@ -1,3 +1,5 @@
 services:
     PrestaShop\Module\PsFixturesCreator\Command\ShopCreatorCommand:
-        autoconfigure: true
+        class: PrestaShop\Module\PsFixturesCreator\Command\ShopCreatorCommand
+        tags:
+            - { name: 'console.command' }
