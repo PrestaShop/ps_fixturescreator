@@ -26,6 +26,13 @@ cd ../..
 php bin/console prestashop:module install psfixturescreator
 php bin/console cache:clear
 ```
+### Bash steps - tricks (optionnal)
+If an issue of access rights happens during `Bash steps`, you delete and add again the private key :
+
+```
+ssh-add -D
+ssh-add ~/.ssh/private_key
+```
 
 ## Usage
 
