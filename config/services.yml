@@ -1,5 +1,0 @@
-services:
-    PrestaShop\Module\PsFixturesCreator\Command\ShopCreatorCommand:
-        class: PrestaShop\Module\PsFixturesCreator\Command\ShopCreatorCommand
-        tags:
-            - { name: 'console.command' }
