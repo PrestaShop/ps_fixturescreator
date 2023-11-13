@@ -1,4 +1,5 @@
 <?php
+
 if (!defined('_PS_VERSION_')) {
     exit;
 }
@@ -17,7 +18,7 @@ class PsFixturesCreator extends Module
         $this->version = '1.0.0';
         $this->author = 'PrestaShop';
         $this->need_instance = 0;
-        $this->ps_versions_compliancy = array('min' => '8.0.0', 'max' => _PS_VERSION_);
+        $this->ps_versions_compliancy = ['min' => '8.0.0', 'max' => _PS_VERSION_];
         $this->bootstrap = true;
 
         parent::__construct();
