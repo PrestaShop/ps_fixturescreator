@@ -26,15 +26,13 @@
 
 namespace PrestaShop\Module\PsFixturesCreator\Command;
 
-use Address;
-use Cart;
-use CartRule;
-use Customer;
 use Db;
-use Faker\Factory;
-use Order;
-use OrderState;
-use Product;
+use PrestaShop\Module\PsFixturesCreator\CartCreator;
+use PrestaShop\Module\PsFixturesCreator\CartRuleCreator;
+use PrestaShop\Module\PsFixturesCreator\CustomerCreator;
+use PrestaShop\Module\PsFixturesCreator\OrderCreator;
+use PrestaShop\Module\PsFixturesCreator\ProductCombinationCreator;
+use PrestaShop\Module\PsFixturesCreator\ProductCreator;
 use Shop;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -46,29 +44,62 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 class ShopCreatorCommand extends Command
 {
+    private CustomerCreator $customerCreator;
+
+    private CartCreator $cartCreator;
+
+    private OrderCreator $orderCreator;
+
+    private CartRuleCreator $cartRuleCreator;
+
+    private ProductCreator $productCreator;
+
+    private ProductCombinationCreator $productCombinationCreator;
+
+    public function __construct(
+        CustomerCreator $customerCreator,
+        CartCreator $cartCreator,
+        OrderCreator $orderCreator,
+        CartRuleCreator $cartRuleCreator,
+        ProductCreator $productCreator,
+        ProductCombinationCreator $productCombinationCreator
+    ) {
+        parent::__construct(null);
+
+        $this->customerCreator = $customerCreator;
+        $this->cartCreator = $cartCreator;
+        $this->orderCreator = $orderCreator;
+        $this->cartRuleCreator = $cartRuleCreator;
+        $this->productCreator = $productCreator;
+        $this->productCombinationCreator = $productCombinationCreator;
+    }
+
     /**
      * {@inheritdoc}
      */
-    protected function configure()
+    protected function configure(): void
     {
         $this
             ->setName('prestashop:shop-creator')
-            ->addOption('orders', null, InputOption::VALUE_OPTIONAL, 'Number of orders to create', 10)
-            ->addOption('customers', null, InputOption::VALUE_OPTIONAL, 'Number of customers without order to create', 5)
-            ->addOption('carts', null, InputOption::VALUE_OPTIONAL, 'Number of carts to create', 50)
-            ->addOption('cart-rules', null, InputOption::VALUE_OPTIONAL, 'Number of cart rules to create', 10)
-            ->addOption('products', null, InputOption::VALUE_OPTIONAL, 'Number of products to create', 10)
+            ->addOption('orders', null, InputOption::VALUE_OPTIONAL, 'Number of orders to create', 0)
+            ->addOption('customers', null, InputOption::VALUE_OPTIONAL, 'Number of customers without order to create', 0)
+            ->addOption('carts', null, InputOption::VALUE_OPTIONAL, 'Number of carts to create', 0)
+            ->addOption('cart-rules', null, InputOption::VALUE_OPTIONAL, 'Number of cart rules to create', 0)
+            ->addOption('products', null, InputOption::VALUE_OPTIONAL, 'Number of products to create', 0)
             ->addOption('shopId', null, InputOption::VALUE_OPTIONAL, 'The shop identifier', 1)
             ->addOption('shopGroupId', null, InputOption::VALUE_OPTIONAL, 'The shop group identifier', 1)
             ->addOption('languageId', null, InputOption::VALUE_OPTIONAL, 'The languageId identifier', 1)
+
+            // values for product combinations, if all three parameters are not above zero, nothing will be done
+            ->addOption('attributeGroups', null, InputOption::VALUE_OPTIONAL, 'Number of attribute groups', 0)
+            ->addOption('attributes', null, InputOption::VALUE_OPTIONAL, 'Number of attributes per attribute group', 0)
+            ->addOption('targetProductIdForAttributes', null, InputOption::VALUE_OPTIONAL, 'ID of the product that will receive attributes', 0)
         ;
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         \Context::getContext()->currency = \Currency::getDefaultCurrency();
-
-        $faker = Factory::create('en_EN');
 
         $numberOfOrders = (int) $input->getOption('orders');
         $numberOfCustomerWithoutOrder = (int) $input->getOption('customers');
@@ -78,139 +109,38 @@ class ShopCreatorCommand extends Command
         $idLang = (int) $input->getOption('languageId');
         $idshop = (int) $input->getOption('shopId');
         $idShopGroup = (int) $input->getOption('shopGroupId');
+        $numberOfAttributeGroups = (int) $input->getOption('attributeGroups');
+        $numberOfAttributes = (int) $input->getOption('attributes');
+        $targetProductIdForAttributes = (int) $input->getOption('targetProductIdForAttributes');
 
         $productIds = $this->getSimpleProducts($idLang);
-        for ($i = 0; $i < $numberOfCustomerWithoutOrder; ++$i) {
-            $customer = new Customer();
-            $customer->firstname = $faker->firstName;
-            $customer->lastname = $faker->lastName;
-            $customer->email = $faker->email;
-            $customer->passwd = '$2y$10$WzLnGz9j..JtTFcjfjoWr.8L/rw39NwovNRwPxf6yk/AYWcIj/1Au';
-            $customer->add();
-            $output->writeln('Customer without order ' . ($i + 1) . ' created successfully.');
-        }
-        for ($i = 0; $i < $numberOfCarts; ++$i) {
-            $cart = new Cart();
-            $cart->id_currency = 1; // Modifier cette valeur selon les devises disponibles dans votre boutique
-            $cart->add();
 
-            for ($j = 0; $j < $faker->numberBetween(1, 5); ++$j) {
-                $randomProduct = $faker->randomElement($productIds);
-                $cart->updateQty($faker->numberBetween(1, 3), $randomProduct['id_product']);
-            }
-            $output->writeln('Cart ' . ($i + 1) . ' created successfully.');
-        }
+        // Create customers (without order)
+        $this->customerCreator->generate($numberOfCustomerWithoutOrder);
+        $output->writeln(sprintf('%s customer(s) without orders created.', $numberOfCustomerWithoutOrder));
 
-        $output->writeln('End generation 1k carts without order');
+        // Create carts
+        $this->cartCreator->generate($numberOfCarts, $productIds);
+        $output->writeln(sprintf('%s cart(s) created.', $numberOfCarts));
 
-        for ($i = 0; $i < $numberOfOrders; ++$i) {
-            $customer = new Customer();
-            $customer->firstname = $faker->firstName;
-            $customer->lastname = $faker->lastName;
-            $customer->email = $faker->email;
-            $customer->passwd = '$2y$10$WzLnGz9j..JtTFcjfjoWr.8L/rw39NwovNRwPxf6yk/AYWcIj/1Au';
-            $customer->add();
+        // Create orders
+        $this->orderCreator->generate($numberOfOrders, $idShopGroup, $idshop, $productIds);
+        $output->writeln(sprintf('%s order(s) created.', $numberOfOrders));
 
-            $address = new Address();
-            $address->id_customer = $customer->id;
-            $address->alias = 'default';
-            $address->firstname = $customer->firstname;
-            $address->lastname = $customer->lastname;
-            $address->address1 = $faker->streetAddress;
-            $address->city = $faker->city;
-            $address->postcode = $faker->postcode;
-            $address->id_country = $faker->numberBetween(1, 1);
-            $address->phone = $faker->phoneNumber;
-            $address->dni = '1234567891012131';
-            $address->add();
+        // create cart rules
+        $this->cartRuleCreator->generate($numberOfCartRules, $idLang);
+        $output->writeln(sprintf('%s cart rule(s) created.', $numberOfCartRules));
 
-            $cart = new Cart();
-            $cart->id_customer = $customer->id;
-            $cart->id_address_delivery = $address->id;
-            $cart->id_address_invoice = $address->id;
-            $cart->id_currency = 1;
-            $cart->add();
+        // create products
+        $this->productCreator->generate($numberOfProducts, $idLang);
+        $output->writeln(sprintf('%s product(s) created', $numberOfProducts));
 
-            for ($j = 0; $j < $faker->numberBetween(1, 5); ++$j) {
-                $randomProduct = $faker->randomElement($productIds);
-                $cart->updateQty($faker->numberBetween(1, 3), $randomProduct['id_product']);
-            }
-
-            $order = new Order();
-            $order->id_shop_group = $idShopGroup;
-            $order->id_shop = $idshop;
-            $order->id_cart = $cart->id;
-            $order->id_customer = $customer->id;
-            $order->id_address_delivery = $address->id;
-            $order->id_address_invoice = $address->id;
-            $order->id_currency = $cart->id_currency;
-            $order->id_carrier = 1;
-            $order->id_lang = $cart->id_lang;
-            $order->payment = 'Faker Payment';
-            $order->module = 'fakerpayment';
-            $order->total_paid = $cart->getOrderTotal(true, Cart::BOTH);
-            $order->total_paid_real = $cart->getOrderTotal(true, Cart::BOTH);
-            $order->total_paid_tax_incl = $cart->getOrderTotal(true, Cart::BOTH);
-            $order->total_paid_tax_excl = $cart->getOrderTotal(false, Cart::BOTH);
-            $order->total_products = $cart->getOrderTotal(false, Cart::ONLY_PRODUCTS);
-            $order->total_products_wt = $cart->getOrderTotal(true, Cart::ONLY_PRODUCTS);
-            $order->total_shipping = 0;
-            $order->secure_key = md5('test');
-            $order->carrier_tax_rate = 0;
-            $order->conversion_rate = 1;
-
-            $order->add();
-
-            $orderStatus = new OrderState(3); // 3 est l'ID du statut de la commande "en cours de préparation"
-            $order->setCurrentState($orderStatus->id);
-            $order->save();
-
-            $output->writeln('Order ' . ($i + 1) . ' created successfully.');
-        }
-
-        for ($i = 0; $i < $numberOfCartRules; ++$i) {
-            $cartRule = new CartRule();
-            $cartRule->name = [$idLang => 'Fake Cart Rule ' . ($i + 1)];
-            $cartRule->description = 'Generated by the Faker library';
-            $cartRule->code = strtoupper($faker->bothify('FAKE-CART-RULE-????'));
-            $cartRule->quantity = $faker->numberBetween(1, 100);
-            $cartRule->quantity_per_user = $faker->numberBetween(1, 10);
-            $cartRule->priority = $faker->numberBetween(1, 10);
-            $cartRule->partial_use = $faker->boolean(50);
-            $cartRule->minimum_amount = $faker->randomFloat(2, 0, 500);
-            $cartRule->minimum_amount_currency = 1; // Change this value according to the currencies available in your store
-            $cartRule->reduction_percent = $faker->numberBetween(10, 90);
-            $cartRule->free_shipping = $faker->boolean(50);
-            $cartRule->active = true;
-
-            // Set the date range for the cart rule
-            $startDate = $faker->dateTimeBetween('-1 year', 'now');
-            $endDate = $faker->dateTimeBetween($startDate, '+1 year');
-            $cartRule->date_from = $startDate->format('Y-m-d H:i:s');
-            $cartRule->date_to = $endDate->format('Y-m-d H:i:s');
-
-            $cartRule->add();
-            $output->writeln('Cart Rule ' . ($i + 1) . " created successfully.\n");
-        }
-
-        for ($i = 0; $i < $numberOfProducts; ++$i) {
-            $product = new Product();
-            $productName = 'Fake Product ' . ($i + 1);
-
-            $product->name = [$idLang => $productName];
-            $product->description = 'This is a fake product generated by the Faker library.';
-            $product->description_short = 'Generated by the Faker library.';
-            $product->price = $faker->randomFloat(2, 1, 1000);
-            $product->reference = $faker->bothify('FAKE-PRODUCT-????');
-            $product->active = true;
-
-            $product->add();
-
-            // Associate the product to categories (use your own category IDs)
-            $categories = [2, 3, 4];
-            $product->updateCategories($categories);
-
-            echo 'Product ' . ($i + 1) . " created successfully.\n";
+        // create product combination (attribute groups and attributes which are then attached to a product)
+        if ($numberOfAttributeGroups > 0 && $numberOfAttributes > 0 && $targetProductIdForAttributes > 0) {
+            $this->productCombinationCreator->generate($numberOfAttributeGroups, $numberOfAttributes, $targetProductIdForAttributes, $idLang, $idshop);
+            $output->writeln(sprintf('Created %s attribute group(s) with %s different values each for product with ID %s.', $numberOfAttributeGroups, $numberOfAttributes, $targetProductIdForAttributes));
+        } else {
+            $output->writeln('0 product combination(s) created.');
         }
 
         return 0;
@@ -221,7 +151,7 @@ class ShopCreatorCommand extends Command
      *
      * @return array
      */
-    private function getSimpleProducts($id_lang, bool $front = true)
+    private function getSimpleProducts($id_lang, bool $front = true): bool|array
     {
         $sql = 'SELECT p.`id_product`, pl.`name`
                 FROM `' . _DB_PREFIX_ . 'product` p
