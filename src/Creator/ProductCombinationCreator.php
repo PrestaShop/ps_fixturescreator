@@ -1,6 +1,6 @@
 <?php
 
-namespace PrestaShop\Module\PsFixturesCreator;
+namespace PrestaShop\Module\PsFixturesCreator\Creator;
 
 use Doctrine\ORM\EntityManagerInterface;
 use PrestaShop\PrestaShop\Core\CommandBus\CommandBusInterface;
@@ -54,50 +54,5 @@ class ProductCombinationCreator
                 $shopId ? ShopConstraint::shop($shopId) : ShopConstraint::allShops()
             ));
         }
-    }
-
-    private function createAttributeGroup(int $attributeGroupNumber): AttributeGroup
-    {
-        $attributeGroupLang = new AttributeGroupLang();
-        $attributeGroupLang->setName('fake_attribute_' . (string) $attributeGroupNumber);
-        $attributeGroupLang->setPublicName('fake_attribute_' . (string) $attributeGroupNumber);
-        $attributeGroupLang->setLang($this->lang);
-
-        $attributeGroup = new AttributeGroup();
-        $attributeGroup->setIsColorGroup(false);
-        $attributeGroup->setGroupType('select');
-        $attributeGroup->setPosition($attributeGroupNumber);
-        $attributeGroup->addShop($this->shop);
-        $attributeGroup->addAttributeGroupLang($attributeGroupLang);
-        $attributeGroupLang->setAttributeGroup($attributeGroup);
-
-        $this->entityManager->persist($attributeGroup);
-        $this->entityManager->persist($attributeGroupLang);
-
-        $this->entityManager->flush();
-
-        return $attributeGroup;
-    }
-
-    private function createAttribute(int $attributeNumber, AttributeGroup $attributeGroup): Attribute
-    {
-        $attributeLang = new AttributeLang();
-        $attributeLang->setLang($this->lang);
-        $attributeLang->setName('fake_attribute_value_' . (string) $attributeNumber);
-
-        $attribute = new Attribute();
-        $attribute->setAttributeGroup($attributeGroup);
-        $attribute->setColor('');
-        $attribute->setPosition($attributeNumber);
-        $attribute->addShop($this->shop);
-        $attribute->addAttributeLang($attributeLang);
-        $attributeLang->setAttribute($attribute);
-
-        $this->entityManager->persist($attribute);
-        $this->entityManager->persist($attributeLang);
-
-        $this->entityManager->flush();
-
-        return $attribute;
     }
 }

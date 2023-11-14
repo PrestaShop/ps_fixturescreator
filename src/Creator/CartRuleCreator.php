@@ -1,6 +1,6 @@
 <?php
 
-namespace PrestaShop\Module\PsFixturesCreator;
+namespace PrestaShop\Module\PsFixturesCreator\Creator;
 
 use CartRule;
 use Faker\Generator as Faker;
