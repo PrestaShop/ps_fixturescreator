@@ -27,12 +27,13 @@
 namespace PrestaShop\Module\PsFixturesCreator\Command;
 
 use Db;
-use PrestaShop\Module\PsFixturesCreator\CartCreator;
-use PrestaShop\Module\PsFixturesCreator\CartRuleCreator;
-use PrestaShop\Module\PsFixturesCreator\CustomerCreator;
-use PrestaShop\Module\PsFixturesCreator\OrderCreator;
-use PrestaShop\Module\PsFixturesCreator\ProductCombinationCreator;
-use PrestaShop\Module\PsFixturesCreator\ProductCreator;
+use PrestaShop\Module\PsFixturesCreator\Creator\AttributeCreator;
+use PrestaShop\Module\PsFixturesCreator\Creator\CartCreator;
+use PrestaShop\Module\PsFixturesCreator\Creator\CartRuleCreator;
+use PrestaShop\Module\PsFixturesCreator\Creator\CustomerCreator;
+use PrestaShop\Module\PsFixturesCreator\Creator\OrderCreator;
+use PrestaShop\Module\PsFixturesCreator\Creator\ProductCombinationCreator;
+use PrestaShop\Module\PsFixturesCreator\Creator\ProductCreator;
 use Shop;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -54,6 +55,8 @@ class ShopCreatorCommand extends Command
 
     private ProductCreator $productCreator;
 
+    private AttributeCreator $attributeCreator;
+
     private ProductCombinationCreator $productCombinationCreator;
 
     public function __construct(
@@ -62,6 +65,7 @@ class ShopCreatorCommand extends Command
         OrderCreator $orderCreator,
         CartRuleCreator $cartRuleCreator,
         ProductCreator $productCreator,
+        AttributeCreator $attributeCreator,
         ProductCombinationCreator $productCombinationCreator
     ) {
         parent::__construct(null);
@@ -71,6 +75,7 @@ class ShopCreatorCommand extends Command
         $this->orderCreator = $orderCreator;
         $this->cartRuleCreator = $cartRuleCreator;
         $this->productCreator = $productCreator;
+        $this->attributeCreator = $attributeCreator;
         $this->productCombinationCreator = $productCombinationCreator;
     }
 
@@ -86,14 +91,12 @@ class ShopCreatorCommand extends Command
             ->addOption('carts', null, InputOption::VALUE_OPTIONAL, 'Number of carts to create', 0)
             ->addOption('cart-rules', null, InputOption::VALUE_OPTIONAL, 'Number of cart rules to create', 0)
             ->addOption('products', null, InputOption::VALUE_OPTIONAL, 'Number of products to create', 0)
+            ->addOption('productsWithCombinations', null, InputOption::VALUE_OPTIONAL, 'Number of products with combinations to create', 0)
             ->addOption('shopId', null, InputOption::VALUE_OPTIONAL, 'The shop identifier', 1)
             ->addOption('shopGroupId', null, InputOption::VALUE_OPTIONAL, 'The shop group identifier', 1)
             ->addOption('languageId', null, InputOption::VALUE_OPTIONAL, 'The languageId identifier', 1)
-
-            // values for product combinations, if all three parameters are not above zero, nothing will be done
             ->addOption('attributeGroups', null, InputOption::VALUE_OPTIONAL, 'Number of attribute groups', 0)
-            ->addOption('attributes', null, InputOption::VALUE_OPTIONAL, 'Number of attributes per attribute group', 0)
-            ->addOption('targetProductIdForAttributes', null, InputOption::VALUE_OPTIONAL, 'ID of the product that will receive attributes', 0)
+            ->addOption('attributes', null, InputOption::VALUE_OPTIONAL, 'Number of attributes per attribute group', 10)
         ;
     }
 
@@ -111,36 +114,51 @@ class ShopCreatorCommand extends Command
         $idShopGroup = (int) $input->getOption('shopGroupId');
         $numberOfAttributeGroups = (int) $input->getOption('attributeGroups');
         $numberOfAttributes = (int) $input->getOption('attributes');
-        $targetProductIdForAttributes = (int) $input->getOption('targetProductIdForAttributes');
+        $productsWithCombinations = (int) $input->getOption('productsWithCombinations');
 
-        $productIds = $this->getSimpleProducts($idLang);
+        $productIds = $this->getStandardProducts($idLang);
 
         // Create customers (without order)
-        $this->customerCreator->generate($numberOfCustomerWithoutOrder);
-        $output->writeln(sprintf('%s customer(s) without orders created.', $numberOfCustomerWithoutOrder));
-
-        // Create carts
-        $this->cartCreator->generate($numberOfCarts, $productIds);
-        $output->writeln(sprintf('%s cart(s) created.', $numberOfCarts));
-
-        // Create orders
-        $this->orderCreator->generate($numberOfOrders, $idShopGroup, $idshop, $productIds);
-        $output->writeln(sprintf('%s order(s) created.', $numberOfOrders));
+        if (!empty($numberOfCustomerWithoutOrder)) {
+            $this->customerCreator->generate($numberOfCustomerWithoutOrder);
+            $output->writeln(sprintf('%s customer(s) without orders created.', $numberOfCustomerWithoutOrder));
+        }
 
         // create cart rules
-        $this->cartRuleCreator->generate($numberOfCartRules, $idLang);
-        $output->writeln(sprintf('%s cart rule(s) created.', $numberOfCartRules));
+        if (!empty($numberOfCartRules)) {
+            $this->cartRuleCreator->generate($numberOfCartRules, $idLang);
+            $output->writeln(sprintf('%s cart rule(s) created.', $numberOfCartRules));
+        }
 
         // create products
-        $this->productCreator->generate($numberOfProducts, $idLang);
-        $output->writeln(sprintf('%s product(s) created', $numberOfProducts));
+        if (!empty($numberOfProducts)) {
+            $this->productCreator->generate($numberOfProducts, $idLang);
+            $output->writeln(sprintf('%s product(s) created', $numberOfProducts));
+        }
 
-        // create product combination (attribute groups and attributes which are then attached to a product)
-        if ($numberOfAttributeGroups > 0 && $numberOfAttributes > 0 && $targetProductIdForAttributes > 0) {
-            $this->productCombinationCreator->generate($numberOfAttributeGroups, $numberOfAttributes, $targetProductIdForAttributes, $idLang, $idshop);
-            $output->writeln(sprintf('Created %s attribute group(s) with %s different values each for product with ID %s.', $numberOfAttributeGroups, $numberOfAttributes, $targetProductIdForAttributes));
+        // create product with combinations, if attributes are needed they will be created dynamically
+        if (!empty($productsWithCombinations)) {
+            $this->productCombinationCreator->generate($productsWithCombinations, $numberOfAttributeGroups, $numberOfAttributes, $idshop);
+            $output->writeln(sprintf('%s product(s) with combinations created', $productsWithCombinations));
         } else {
-            $output->writeln('0 product combination(s) created.');
+            // If not product with combinations asked, simply create attributes
+            if ($numberOfAttributeGroups > 0 && $numberOfAttributes > 0) {
+                $this->attributeCreator->generate($numberOfAttributeGroups, $numberOfAttributes, $idshop);
+                $output->writeln(sprintf('Created %s attribute group(s) with %s different values each.', $numberOfAttributeGroups, $numberOfAttributes));
+            }
+        }
+
+        // Carts and orders are created last, so they can use new products randomly
+        // Create carts
+        if (!empty($numberOfCarts)) {
+            $this->cartCreator->generate($numberOfCarts, $productIds);
+            $output->writeln(sprintf('%s cart(s) created.', $numberOfCarts));
+        }
+
+        // Create orders
+        if (!empty($numberOfOrders)) {
+            $this->orderCreator->generate($numberOfOrders, $idShopGroup, $idshop, $productIds);
+            $output->writeln(sprintf('%s order(s) created.', $numberOfOrders));
         }
 
         return 0;
@@ -149,18 +167,18 @@ class ShopCreatorCommand extends Command
     /**
      * @param int $id_lang Language identifier
      *
-     * @return array
+     * @return bool|array
      */
-    private function getSimpleProducts($id_lang, bool $front = true): bool|array
+    private function getStandardProducts($id_lang, bool $front = true)
     {
         $sql = 'SELECT p.`id_product`, pl.`name`
                 FROM `' . _DB_PREFIX_ . 'product` p
                 ' . Shop::addSqlAssociation('product', 'p') . '
                 LEFT JOIN `' . _DB_PREFIX_ . 'product_lang` pl ON (p.`id_product` = pl.`id_product` ' . Shop::addSqlRestrictionOnLang('pl') . ')
-                WHERE pl.`id_lang` = ' . (int) $id_lang . '
+                WHERE p.`product_type` = "standard" AND pl.`id_lang` = ' . (int) $id_lang . '
                 ' . ($front ? ' AND product_shop.`visibility` IN ("both", "catalog")' : '') . '
                 ORDER BY pl.`name`';
 
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql);
+        return Db::getInstance((bool) _PS_USE_SQL_SLAVE_)->executeS($sql);
     }
 }

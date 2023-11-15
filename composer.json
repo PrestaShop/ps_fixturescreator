@@ -1,23 +1,35 @@
 {
-    "name": "prestashop/ps_fixtures_creator",
+  "name": "prestashop/ps_fixtures_creator",
   "license": "AFL-3.0",
   "authors": [
-        {
-            "name": "Fabien Papet",
-            "email": "FabienPapet@users.noreply.github.com"
-        }
+    {
+      "name": "Fabien Papet",
+      "email": "FabienPapet@users.noreply.github.com"
+    }
+  ],
+  "autoload": {
+    "psr-4": {
+      "PrestaShop\\Module\\PsFixturesCreator\\": "src/"
+    },
+    "classmap": [
+      "psfixturescreator.php"
     ],
-    "autoload": {
-      "psr-4": {
-        "PrestaShop\\Module\\PsFixturesCreator\\": "src/"
-      }
-    },
-    "require": {
-        "fakerphp/faker": "^1.21.0",
-        "symfony/console": "^4.4"
-    },
+    "exclude-from-classmap": []
+  },
+  "require": {
+    "php": ">=7.4",
+    "fakerphp/faker": "^1.21.0",
+    "symfony/console": "^4.4",
+    "mbezhanov/faker-provider-collection": "^2.0"
+  },
+  "require-dev": {
+    "prestashop/php-dev-tools": "^4.3"
+  },
   "config": {
-    "prepend-autoloader": false
+    "prepend-autoloader": false,
+    "platform": {
+      "php": "7.4.0"
+    }
   },
   "type": "prestashop-module"
 }
