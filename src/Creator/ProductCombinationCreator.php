@@ -3,8 +3,6 @@
 namespace PrestaShop\Module\PsFixturesCreator\Creator;
 
 use Doctrine\DBAL\ArrayParameterType;
-use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Query;
 use Faker\Generator;
@@ -16,11 +14,8 @@ use PrestaShop\PrestaShop\Core\Domain\Product\ValueObject\ProductType;
 use PrestaShop\PrestaShop\Core\Domain\Shop\ValueObject\ShopConstraint;
 use PrestaShopBundle\Entity\Attribute;
 use PrestaShopBundle\Entity\AttributeGroup;
-use PrestaShopBundle\Entity\AttributeGroupLang;
-use PrestaShopBundle\Entity\AttributeLang;
 use PrestaShopBundle\Entity\Lang;
 use PrestaShopBundle\Entity\Repository\LangRepository;
-use PrestaShopBundle\Entity\Shop as ShopEntity;
 
 class ProductCombinationCreator
 {
@@ -123,9 +118,9 @@ class ProductCombinationCreator
             ->addGroupBy('ag.id')
         ;
         $attributeGroups = $qb->getQuery()->getArrayResult();
-        $attributeGroupIds = array_map(static function(array $attributeGroup) {
+        $attributeGroupIds = array_map(static function (array $attributeGroup) {
             return (int) $attributeGroup['id'];
-        }, array_filter($attributeGroups, static function(array $attributeGroup) use ($minimumValuesNumber) {
+        }, array_filter($attributeGroups, static function (array $attributeGroup) use ($minimumValuesNumber) {
             return $attributeGroup['attributesNb'] >= $minimumValuesNumber;
         }));
 
@@ -137,6 +132,7 @@ class ProductCombinationCreator
             ->where('ag.id IN (:attributeGroupIds)')
             ->setParameter('attributeGroupIds', array_values($attributeGroupIds), ArrayParameterType::INTEGER)
         ;
+
         return $qb->getQuery()->getResult(Query::HYDRATE_OBJECT);
     }
 }

@@ -22,6 +22,9 @@
     "symfony/console": "^4.4",
     "mbezhanov/faker-provider-collection": "^2.0"
   },
+  "require-dev": {
+    "prestashop/php-dev-tools": "^4.3"
+  },
   "config": {
     "prepend-autoloader": false,
     "platform": {

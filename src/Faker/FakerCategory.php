@@ -30,7 +30,6 @@ namespace PrestaShop\Module\PsFixturesCreator\Faker;
 
 use Doctrine\Inflector\Inflector;
 use Doctrine\Inflector\InflectorFactory;
-use Doctrine\Inflector\NoopWordInflector;
 use Faker\Generator;
 
 class FakerCategory

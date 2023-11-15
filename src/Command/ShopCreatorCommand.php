@@ -161,7 +161,6 @@ class ShopCreatorCommand extends Command
             $output->writeln(sprintf('%s order(s) created.', $numberOfOrders));
         }
 
-
         return 0;
     }
 

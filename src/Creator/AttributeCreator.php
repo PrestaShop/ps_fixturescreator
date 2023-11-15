@@ -31,7 +31,6 @@ namespace PrestaShop\Module\PsFixturesCreator\Creator;
 use Doctrine\ORM\EntityManagerInterface;
 use Faker\Generator as Faker;
 use PrestaShop\Module\PsFixturesCreator\Faker\FakerCategory;
-use PrestaShop\PrestaShop\Core\CommandBus\CommandBusInterface;
 use PrestaShopBundle\Entity\Attribute;
 use PrestaShopBundle\Entity\AttributeGroup;
 use PrestaShopBundle\Entity\AttributeGroupLang;
