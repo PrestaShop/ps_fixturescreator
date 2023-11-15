@@ -167,9 +167,9 @@ class ShopCreatorCommand extends Command
     /**
      * @param int $id_lang Language identifier
      *
-     * @return array
+     * @return bool|array
      */
-    private function getStandardProducts($id_lang, bool $front = true): bool|array
+    private function getStandardProducts($id_lang, bool $front = true)
     {
         $sql = 'SELECT p.`id_product`, pl.`name`
                 FROM `' . _DB_PREFIX_ . 'product` p
@@ -179,6 +179,6 @@ class ShopCreatorCommand extends Command
                 ' . ($front ? ' AND product_shop.`visibility` IN ("both", "catalog")' : '') . '
                 ORDER BY pl.`name`';
 
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql);
+        return Db::getInstance((bool) _PS_USE_SQL_SLAVE_)->executeS($sql);
     }
 }

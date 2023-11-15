@@ -1,0 +1,14 @@
+includes:
+	- %currentWorkingDirectory%/vendor/prestashop/php-dev-tools/phpstan/ps-module-extension.neon
+parameters:
+  paths:
+    - ../../psfixturescreator.php
+    - ../../src/
+  level: 5
+  ignoreErrors:
+  -
+    message: '#Access to an undefined property Faker\\Generator#'
+    path: ../../src/Creator/ProductCombinationCreator.php
+  -
+    message: '#Call to an undefined method Faker\\Generator#'
+    path: ../../src/Faker/FakerCategory.php

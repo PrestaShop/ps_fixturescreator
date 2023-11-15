@@ -29,7 +29,6 @@ declare(strict_types=1);
 namespace PrestaShop\Module\PsFixturesCreator\Creator;
 
 use Doctrine\ORM\EntityManagerInterface;
-use Faker\Generator as Faker;
 use PrestaShop\Module\PsFixturesCreator\Faker\FakerCategory;
 use PrestaShopBundle\Entity\Attribute;
 use PrestaShopBundle\Entity\AttributeGroup;
@@ -50,18 +49,14 @@ class AttributeCreator
 
     private ShopRepository $shopRepository;
 
-    private Faker $faker;
-
     public function __construct(
         EntityManagerInterface $entityManager,
         LangRepository $langRepository,
         ShopRepository $shopRepository,
-        Faker $faker
     ) {
         $this->entityManager = $entityManager;
         $this->langRepository = $langRepository;
         $this->shopRepository = $shopRepository;
-        $this->faker = $faker;
     }
 
     public function generate(int $attributeGroupNumber, int $attributeValuePerGroupNumber, int $shopId): array

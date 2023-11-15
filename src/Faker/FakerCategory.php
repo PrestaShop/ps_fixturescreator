@@ -69,9 +69,9 @@ class FakerCategory
     private static array $randomAvailableCategories;
 
     /**
-     * @var Inflector
+     * @var Inflector|null
      */
-    private static $inflector;
+    private static $inflector = null;
 
     private string $category;
     private string $categoryName;

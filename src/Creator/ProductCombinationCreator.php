@@ -2,7 +2,7 @@
 
 namespace PrestaShop\Module\PsFixturesCreator\Creator;
 
-use Doctrine\DBAL\ArrayParameterType;
+use Doctrine\DBAL\Connection;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Query;
 use Faker\Generator;
@@ -63,18 +63,33 @@ class ProductCombinationCreator
                 $productNames[$lang->getId()] = $productName . ' ' . $lang->getLocale();
             }
 
-            /** @var ProductId $newProductId */
-            $newProductId = $this->commandBus->handle(new AddProductCommand(
-                ProductType::TYPE_COMBINATIONS,
-                $shopId,
-                $productNames
-            ));
+            if (version_compare(_PS_VERSION_, '8.1', '>=')) {
+                /** @var ProductId $newProductId */
+                $newProductId = $this->commandBus->handle(new AddProductCommand(
+                    ProductType::TYPE_COMBINATIONS,
+                    $shopId,
+                    $productNames
+                ));
 
-            $this->commandBus->handle(new GenerateProductCombinationsCommand(
-                $newProductId->getValue(),
-                $combinationAttributes,
-                $shopId ? ShopConstraint::shop($shopId) : ShopConstraint::allShops()
-            ));
+                $this->commandBus->handle(new GenerateProductCombinationsCommand(
+                    $newProductId->getValue(),
+                    $combinationAttributes,
+                    $shopId ? ShopConstraint::shop($shopId) : ShopConstraint::allShops()
+                ));
+            } elseif (version_compare(_PS_VERSION_, '8.0', '>=')) {
+                /** @var ProductId $newProductId */
+                $newProductId = $this->commandBus->handle(new AddProductCommand(
+                    ProductType::TYPE_COMBINATIONS,
+                    $productNames
+                ));
+
+                $this->commandBus->handle(new GenerateProductCombinationsCommand(
+                    $newProductId->getValue(),
+                    $combinationAttributes,
+                ));
+            } else {
+                throw new \RuntimeException(sprintf('Version %s not handled to generate combinations', _PS_VERSION_));
+            }
         }
     }
 
@@ -130,7 +145,7 @@ class ProductCombinationCreator
         ;
         $qb
             ->where('ag.id IN (:attributeGroupIds)')
-            ->setParameter('attributeGroupIds', array_values($attributeGroupIds), ArrayParameterType::INTEGER)
+            ->setParameter('attributeGroupIds', array_values($attributeGroupIds), Connection::PARAM_INT_ARRAY)
         ;
 
         return $qb->getQuery()->getResult(Query::HYDRATE_OBJECT);
