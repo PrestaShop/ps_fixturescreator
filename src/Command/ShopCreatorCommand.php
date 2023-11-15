@@ -31,6 +31,7 @@ use PrestaShop\Module\PsFixturesCreator\Creator\AttributeCreator;
 use PrestaShop\Module\PsFixturesCreator\Creator\CartCreator;
 use PrestaShop\Module\PsFixturesCreator\Creator\CartRuleCreator;
 use PrestaShop\Module\PsFixturesCreator\Creator\CustomerCreator;
+use PrestaShop\Module\PsFixturesCreator\Creator\FeatureCreator;
 use PrestaShop\Module\PsFixturesCreator\Creator\OrderCreator;
 use PrestaShop\Module\PsFixturesCreator\Creator\ProductCombinationCreator;
 use PrestaShop\Module\PsFixturesCreator\Creator\ProductCreator;
@@ -57,6 +58,8 @@ class ShopCreatorCommand extends Command
 
     private AttributeCreator $attributeCreator;
 
+    private FeatureCreator $featureCreator;
+
     private ProductCombinationCreator $productCombinationCreator;
 
     public function __construct(
@@ -66,6 +69,7 @@ class ShopCreatorCommand extends Command
         CartRuleCreator $cartRuleCreator,
         ProductCreator $productCreator,
         AttributeCreator $attributeCreator,
+        FeatureCreator $featureCreator,
         ProductCombinationCreator $productCombinationCreator
     ) {
         parent::__construct(null);
@@ -76,6 +80,7 @@ class ShopCreatorCommand extends Command
         $this->cartRuleCreator = $cartRuleCreator;
         $this->productCreator = $productCreator;
         $this->attributeCreator = $attributeCreator;
+        $this->featureCreator = $featureCreator;
         $this->productCombinationCreator = $productCombinationCreator;
     }
 
@@ -97,6 +102,8 @@ class ShopCreatorCommand extends Command
             ->addOption('languageId', null, InputOption::VALUE_OPTIONAL, 'The languageId identifier', 1)
             ->addOption('attributeGroups', null, InputOption::VALUE_OPTIONAL, 'Number of attribute groups', 0)
             ->addOption('attributes', null, InputOption::VALUE_OPTIONAL, 'Number of attributes per attribute group', 10)
+            ->addOption('features', null, InputOption::VALUE_OPTIONAL, 'Number of features', 0)
+            ->addOption('featureValues', null, InputOption::VALUE_OPTIONAL, 'Number of values per feature', 10)
         ;
     }
 
@@ -114,6 +121,8 @@ class ShopCreatorCommand extends Command
         $idShopGroup = (int) $input->getOption('shopGroupId');
         $numberOfAttributeGroups = (int) $input->getOption('attributeGroups');
         $numberOfAttributes = (int) $input->getOption('attributes');
+        $numberOfFeatures = (int) $input->getOption('features');
+        $numberOfFeatureValues = (int) $input->getOption('featureValues');
         $productsWithCombinations = (int) $input->getOption('productsWithCombinations');
 
         $productIds = $this->getStandardProducts($idLang);
@@ -128,6 +137,12 @@ class ShopCreatorCommand extends Command
         if (!empty($numberOfCartRules)) {
             $this->cartRuleCreator->generate($numberOfCartRules, $idLang);
             $output->writeln(sprintf('%s cart rule(s) created.', $numberOfCartRules));
+        }
+
+        // create features
+        if ($numberOfFeatures > 0 && $numberOfFeatureValues > 0) {
+            $this->featureCreator->generate($numberOfFeatures, $numberOfFeatureValues, $idshop);
+            $output->writeln(sprintf('Created %s feature(s) with %s different values each.', $numberOfFeatures, $numberOfFeatureValues));
         }
 
         // create products

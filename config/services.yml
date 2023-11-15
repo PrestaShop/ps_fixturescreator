@@ -31,7 +31,10 @@ services:
         $entityManager: '@doctrine.orm.entity_manager'
         $langRepository: '@prestashop.core.admin.lang.repository'
         $shopRepository: '@prestashop.core.admin.shop.repository'
-        $faker: '@Faker\Generator'
+
+    PrestaShop\Module\PsFixturesCreator\Creator\FeatureCreator:
+      arguments:
+        $langRepository: '@prestashop.core.admin.lang.repository'
 
     PrestaShop\Module\PsFixturesCreator\Creator\ProductCombinationCreator:
       arguments:
@@ -50,6 +53,7 @@ services:
           $cartRuleCreator: '@PrestaShop\Module\PsFixturesCreator\Creator\CartRuleCreator'
           $productCreator: '@PrestaShop\Module\PsFixturesCreator\Creator\ProductCreator'
           $attributeCreator: '@PrestaShop\Module\PsFixturesCreator\Creator\AttributeCreator'
+          $featureCreator: '@PrestaShop\Module\PsFixturesCreator\Creator\FeatureCreator'
           $productCombinationCreator: '@PrestaShop\Module\PsFixturesCreator\Creator\ProductCombinationCreator'
         tags:
             - { name: 'console.command' }
