@@ -65,10 +65,11 @@ class AttributeCreator
         $this->faker = $faker;
     }
 
-    public function generate(int $attributeGroupNumber, int $attributeValuePerGroupNumber, int $shopId): void
+    public function generate(int $attributeGroupNumber, int $attributeValuePerGroupNumber, int $shopId): array
     {
         $this->shop = $this->shopRepository->find($shopId);
         $languages = $this->langRepository->findAll();
+        $generatedGroups = [];
         for ($i = 1; $i <= $attributeGroupNumber; ++$i) {
             $fakerCategory = FakerCategory::getCategory();
             $attributeGroup = $this->createAttributeGroup($i, $fakerCategory, $languages);
@@ -78,7 +79,10 @@ class AttributeCreator
 
             // Flush created attributes
             $this->entityManager->flush();
+            $generatedGroups[] = $attributeGroup;
         }
+
+        return $generatedGroups;
     }
 
     /**
@@ -98,8 +102,8 @@ class AttributeCreator
 
         foreach ($languages as $lang) {
             $attributeGroupLang = new AttributeGroupLang();
-            $attributeGroupLang->setName($fakerCategory->getCategoryName() . ' ' . $lang->getName());
-            $attributeGroupLang->setPublicName($fakerCategory->getCategoryName() . ' ' . $lang->getName());
+            $attributeGroupLang->setName($fakerCategory->getCategoryName() . ' ' . $lang->getLocale());
+            $attributeGroupLang->setPublicName($fakerCategory->getCategoryName() . ' ' . $lang->getLocale());
             $attributeGroupLang->setLang($lang);
             $attributeGroupLang->setAttributeGroup($attributeGroup);
             $attributeGroup->addAttributeGroupLang($attributeGroupLang);
@@ -134,7 +138,7 @@ class AttributeCreator
             $attributeLang->setAttribute($attribute);
             $this->entityManager->persist($attributeLang);
         }
-
         $this->entityManager->persist($attribute);
+        $attributeGroup->getAttributes()->add($attribute);
     }
 }

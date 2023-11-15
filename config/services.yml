@@ -37,6 +37,9 @@ services:
       arguments:
         $entityManager: '@doctrine.orm.entity_manager'
         $commandBus: '@prestashop.core.command_bus'
+        $attributeCreator: '@PrestaShop\Module\PsFixturesCreator\Creator\AttributeCreator'
+        $langRepository: '@prestashop.core.admin.lang.repository'
+        $faker: '@Faker\Generator'
 
     PrestaShop\Module\PsFixturesCreator\Command\ShopCreatorCommand:
         class: PrestaShop\Module\PsFixturesCreator\Command\ShopCreatorCommand

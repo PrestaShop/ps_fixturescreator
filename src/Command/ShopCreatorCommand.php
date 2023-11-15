@@ -91,6 +91,7 @@ class ShopCreatorCommand extends Command
             ->addOption('carts', null, InputOption::VALUE_OPTIONAL, 'Number of carts to create', 0)
             ->addOption('cart-rules', null, InputOption::VALUE_OPTIONAL, 'Number of cart rules to create', 0)
             ->addOption('products', null, InputOption::VALUE_OPTIONAL, 'Number of products to create', 0)
+            ->addOption('productsWithCombinations', null, InputOption::VALUE_OPTIONAL, 'Number of products with combinations to create', 0)
             ->addOption('shopId', null, InputOption::VALUE_OPTIONAL, 'The shop identifier', 1)
             ->addOption('shopGroupId', null, InputOption::VALUE_OPTIONAL, 'The shop group identifier', 1)
             ->addOption('languageId', null, InputOption::VALUE_OPTIONAL, 'The languageId identifier', 1)
@@ -113,6 +114,7 @@ class ShopCreatorCommand extends Command
         $idShopGroup = (int) $input->getOption('shopGroupId');
         $numberOfAttributeGroups = (int) $input->getOption('attributeGroups');
         $numberOfAttributes = (int) $input->getOption('attributes');
+        $productsWithCombinations = (int) $input->getOption('productsWithCombinations');
 
         $productIds = $this->getStandardProducts($idLang);
 
@@ -134,14 +136,19 @@ class ShopCreatorCommand extends Command
             $output->writeln(sprintf('%s product(s) created', $numberOfProducts));
         }
 
-        // create product attributes
-        if ($numberOfAttributeGroups > 0 && $numberOfAttributes > 0) {
-            $this->attributeCreator->generate($numberOfAttributeGroups, $numberOfAttributes, $idshop);
-            $output->writeln(sprintf('Created %s attribute group(s) with %s different values each.', $numberOfAttributeGroups, $numberOfAttributes));
+        // create product with combinations, if attributes are needed they will be created dynamically
+        if (!empty($productsWithCombinations)) {
+            $this->productCombinationCreator->generate($productsWithCombinations, $numberOfAttributeGroups, $numberOfAttributes, $idshop);
+            $output->writeln(sprintf('%s product(s) with combinations created', $productsWithCombinations));
+        } else {
+            // If not product with combinations asked, simply create attributes
+            if ($numberOfAttributeGroups > 0 && $numberOfAttributes > 0) {
+                $this->attributeCreator->generate($numberOfAttributeGroups, $numberOfAttributes, $idshop);
+                $output->writeln(sprintf('Created %s attribute group(s) with %s different values each.', $numberOfAttributeGroups, $numberOfAttributes));
+            }
         }
 
         // Carts and orders are created last, so they can use new products randomly
-
         // Create carts
         if (!empty($numberOfCarts)) {
             $this->cartCreator->generate($numberOfCarts, $productIds);
