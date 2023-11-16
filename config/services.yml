@@ -18,6 +18,10 @@ services:
 
     PrestaShop\Module\PsFixturesCreator\Creator\ProductCreator:
       arguments:
+        $langRepository: '@prestashop.core.admin.lang.repository'
+        $featureCreator: '@PrestaShop\Module\PsFixturesCreator\Creator\FeatureCreator'
+        $connection: '@doctrine.dbal.default_connection'
+        $dbPrefix: '%database_prefix%'
         $faker: '@Faker\Generator'
 
     PrestaShop\Module\PsFixturesCreator\Creator\OrderCreator:
@@ -42,6 +46,9 @@ services:
         $commandBus: '@prestashop.core.command_bus'
         $attributeCreator: '@PrestaShop\Module\PsFixturesCreator\Creator\AttributeCreator'
         $langRepository: '@prestashop.core.admin.lang.repository'
+        $featureCreator: '@PrestaShop\Module\PsFixturesCreator\Creator\FeatureCreator'
+        $connection: '@doctrine.dbal.default_connection'
+        $dbPrefix: '%database_prefix%'
         $faker: '@Faker\Generator'
 
     PrestaShop\Module\PsFixturesCreator\Command\ShopCreatorCommand:
@@ -51,9 +58,15 @@ services:
           $cartCreator: '@PrestaShop\Module\PsFixturesCreator\Creator\CartCreator'
           $orderCreator: '@PrestaShop\Module\PsFixturesCreator\Creator\OrderCreator'
           $cartRuleCreator: '@PrestaShop\Module\PsFixturesCreator\Creator\CartRuleCreator'
-          $productCreator: '@PrestaShop\Module\PsFixturesCreator\Creator\ProductCreator'
           $attributeCreator: '@PrestaShop\Module\PsFixturesCreator\Creator\AttributeCreator'
           $featureCreator: '@PrestaShop\Module\PsFixturesCreator\Creator\FeatureCreator'
-          $productCombinationCreator: '@PrestaShop\Module\PsFixturesCreator\Creator\ProductCombinationCreator'
         tags:
             - { name: 'console.command' }
+
+    PrestaShop\Module\PsFixturesCreator\Command\ProductCreatorCommand:
+      class: PrestaShop\Module\PsFixturesCreator\Command\ProductCreatorCommand
+      arguments:
+        $productCreator: '@PrestaShop\Module\PsFixturesCreator\Creator\ProductCreator'
+        $productCombinationCreator: '@PrestaShop\Module\PsFixturesCreator\Creator\ProductCombinationCreator'
+      tags:
+        - { name: 'console.command' }

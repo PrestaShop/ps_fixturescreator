@@ -44,6 +44,13 @@ class FeatureCreator
         $this->langRepository = $langRepository;
     }
 
+    /**
+     * @param int $featuresNumber
+     * @param int $valuesPerFeatureNumber
+     * @param int $shopId
+     *
+     * @return Feature[]
+     */
     public function generate(int $featuresNumber, int $valuesPerFeatureNumber, int $shopId): array
     {
         $languages = $this->langRepository->findAll();
@@ -53,8 +60,9 @@ class FeatureCreator
             $fakerCategory = FakerCategory::getCategory();
             $feature = $this->createFeature($fakerCategory, $languages, $shopId);
             for ($j = 1; $j <= $valuesPerFeatureNumber; ++$j) {
-                $this->createFeatureValue($feature, $fakerCategory, $languages, $shopId);
+                $this->createFeatureValue($feature, $j, $fakerCategory, $languages, $shopId);
             }
+            $generatedFeatures[] = $feature;
         }
 
         return $generatedFeatures;
@@ -83,18 +91,19 @@ class FeatureCreator
 
     /**
      * @param Feature $feature
+     * @param int $offset
      * @param FakerCategory $fakerCategory
      * @param Lang[] $languages
      * @param int $shopId
      */
-    private function createFeatureValue(Feature $feature, FakerCategory $fakerCategory, array $languages, int $shopId): void
+    private function createFeatureValue(Feature $feature, int $offset, FakerCategory $fakerCategory, array $languages, int $shopId): void
     {
         $featureValue = new FeatureValue();
         $featureValue->id_feature = $feature->id;
         $featureValue->id_shop_list = [$shopId];
         $values = [];
         foreach ($languages as $lang) {
-            $values[$lang->getId()] = $fakerCategory->getCategoryValue($lang->getLocale());
+            $values[$lang->getId()] = $fakerCategory->getCategoryValue($lang->getLocale()) . ' ' . $offset;
         }
         $featureValue->value = $values;
         $featureValue->add();

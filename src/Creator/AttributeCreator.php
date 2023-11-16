@@ -127,7 +127,7 @@ class AttributeCreator
         foreach ($languages as $lang) {
             $attributeLang = new AttributeLang();
             $attributeLang->setLang($lang);
-            $attributeLang->setName($fakerCategory->getCategoryValue($lang->getLocale()));
+            $attributeLang->setName($fakerCategory->getCategoryValue($lang->getLocale()) . ' ' . $attributeNumber);
             $attribute->addAttributeLang($attributeLang);
             $attributeLang->setAttribute($attribute);
             $this->entityManager->persist($attributeLang);

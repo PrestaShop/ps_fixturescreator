@@ -10,5 +10,8 @@ parameters:
     message: '#Access to an undefined property Faker\\Generator#'
     path: ../../src/Creator/ProductCombinationCreator.php
   -
+    message: '#Access to an undefined property Faker\\Generator#'
+    path: ../../src/Creator/ProductCreator.php
+  -
     message: '#Call to an undefined method Faker\\Generator#'
     path: ../../src/Faker/FakerCategory.php

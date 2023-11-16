@@ -33,8 +33,6 @@ use PrestaShop\Module\PsFixturesCreator\Creator\CartRuleCreator;
 use PrestaShop\Module\PsFixturesCreator\Creator\CustomerCreator;
 use PrestaShop\Module\PsFixturesCreator\Creator\FeatureCreator;
 use PrestaShop\Module\PsFixturesCreator\Creator\OrderCreator;
-use PrestaShop\Module\PsFixturesCreator\Creator\ProductCombinationCreator;
-use PrestaShop\Module\PsFixturesCreator\Creator\ProductCreator;
 use Shop;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -54,23 +52,17 @@ class ShopCreatorCommand extends Command
 
     private CartRuleCreator $cartRuleCreator;
 
-    private ProductCreator $productCreator;
-
     private AttributeCreator $attributeCreator;
 
     private FeatureCreator $featureCreator;
-
-    private ProductCombinationCreator $productCombinationCreator;
 
     public function __construct(
         CustomerCreator $customerCreator,
         CartCreator $cartCreator,
         OrderCreator $orderCreator,
         CartRuleCreator $cartRuleCreator,
-        ProductCreator $productCreator,
         AttributeCreator $attributeCreator,
         FeatureCreator $featureCreator,
-        ProductCombinationCreator $productCombinationCreator
     ) {
         parent::__construct(null);
 
@@ -78,10 +70,8 @@ class ShopCreatorCommand extends Command
         $this->cartCreator = $cartCreator;
         $this->orderCreator = $orderCreator;
         $this->cartRuleCreator = $cartRuleCreator;
-        $this->productCreator = $productCreator;
         $this->attributeCreator = $attributeCreator;
         $this->featureCreator = $featureCreator;
-        $this->productCombinationCreator = $productCombinationCreator;
     }
 
     /**
@@ -145,22 +135,10 @@ class ShopCreatorCommand extends Command
             $output->writeln(sprintf('Created %s feature(s) with %s different values each.', $numberOfFeatures, $numberOfFeatureValues));
         }
 
-        // create products
-        if (!empty($numberOfProducts)) {
-            $this->productCreator->generate($numberOfProducts, $idLang);
-            $output->writeln(sprintf('%s product(s) created', $numberOfProducts));
-        }
-
-        // create product with combinations, if attributes are needed they will be created dynamically
-        if (!empty($productsWithCombinations)) {
-            $this->productCombinationCreator->generate($productsWithCombinations, $numberOfAttributeGroups, $numberOfAttributes, $idshop);
-            $output->writeln(sprintf('%s product(s) with combinations created', $productsWithCombinations));
-        } else {
-            // If not product with combinations asked, simply create attributes
-            if ($numberOfAttributeGroups > 0 && $numberOfAttributes > 0) {
-                $this->attributeCreator->generate($numberOfAttributeGroups, $numberOfAttributes, $idshop);
-                $output->writeln(sprintf('Created %s attribute group(s) with %s different values each.', $numberOfAttributeGroups, $numberOfAttributes));
-            }
+        // Create attributes
+        if ($numberOfAttributeGroups > 0 && $numberOfAttributes > 0) {
+            $this->attributeCreator->generate($numberOfAttributeGroups, $numberOfAttributes, $idshop);
+            $output->writeln(sprintf('Created %s attribute group(s) with %s different values each.', $numberOfAttributeGroups, $numberOfAttributes));
         }
 
         // Carts and orders are created last, so they can use new products randomly
