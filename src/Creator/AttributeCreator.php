@@ -52,7 +52,7 @@ class AttributeCreator
     public function __construct(
         EntityManagerInterface $entityManager,
         LangRepository $langRepository,
-        ShopRepository $shopRepository,
+        ShopRepository $shopRepository
     ) {
         $this->entityManager = $entityManager;
         $this->langRepository = $langRepository;

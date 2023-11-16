@@ -39,7 +39,7 @@ class FeatureCreator
     private LangRepository $langRepository;
 
     public function __construct(
-        LangRepository $langRepository,
+        LangRepository $langRepository
     ) {
         $this->langRepository = $langRepository;
     }

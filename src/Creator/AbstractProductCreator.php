@@ -39,7 +39,7 @@ abstract class AbstractProductCreator
     public function __construct(
         FeatureCreator $featureCreator,
         Connection $connection,
-        string $dbPrefix,
+        string $dbPrefix
     ) {
         $this->featureCreator = $featureCreator;
         $this->connection = $connection;

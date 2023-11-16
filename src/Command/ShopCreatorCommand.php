@@ -62,7 +62,7 @@ class ShopCreatorCommand extends Command
         OrderCreator $orderCreator,
         CartRuleCreator $cartRuleCreator,
         AttributeCreator $attributeCreator,
-        FeatureCreator $featureCreator,
+        FeatureCreator $featureCreator
     ) {
         parent::__construct(null);
 
