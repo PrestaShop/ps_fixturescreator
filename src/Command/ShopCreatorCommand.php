@@ -85,8 +85,6 @@ class ShopCreatorCommand extends Command
             ->addOption('customers', null, InputOption::VALUE_OPTIONAL, 'Number of customers without order to create', 0)
             ->addOption('carts', null, InputOption::VALUE_OPTIONAL, 'Number of carts to create', 0)
             ->addOption('cart-rules', null, InputOption::VALUE_OPTIONAL, 'Number of cart rules to create', 0)
-            ->addOption('products', null, InputOption::VALUE_OPTIONAL, 'Number of products to create', 0)
-            ->addOption('productsWithCombinations', null, InputOption::VALUE_OPTIONAL, 'Number of products with combinations to create', 0)
             ->addOption('shopId', null, InputOption::VALUE_OPTIONAL, 'The shop identifier', 1)
             ->addOption('shopGroupId', null, InputOption::VALUE_OPTIONAL, 'The shop group identifier', 1)
             ->addOption('languageId', null, InputOption::VALUE_OPTIONAL, 'The languageId identifier', 1)
@@ -105,7 +103,6 @@ class ShopCreatorCommand extends Command
         $numberOfCustomerWithoutOrder = (int) $input->getOption('customers');
         $numberOfCarts = (int) $input->getOption('carts');
         $numberOfCartRules = (int) $input->getOption('cart-rules');
-        $numberOfProducts = (int) $input->getOption('products');
         $idLang = (int) $input->getOption('languageId');
         $idshop = (int) $input->getOption('shopId');
         $idShopGroup = (int) $input->getOption('shopGroupId');
@@ -113,7 +110,6 @@ class ShopCreatorCommand extends Command
         $numberOfAttributes = (int) $input->getOption('attributes');
         $numberOfFeatures = (int) $input->getOption('features');
         $numberOfFeatureValues = (int) $input->getOption('featureValues');
-        $productsWithCombinations = (int) $input->getOption('productsWithCombinations');
 
         $productIds = $this->getStandardProducts($idLang);
 

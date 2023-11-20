@@ -53,7 +53,7 @@ abstract class AbstractProductCreator
         if (count($featureIds) < $numberOfFeatures) {
             $generatedFeatures = $this->featureCreator->generate($numberOfFeatures - count($featureIds), $numberOfFeatureValues, $shopId);
             foreach ($generatedFeatures as $feature) {
-                $featureIds[] = $feature->id;
+                $featureIds[] = (int) $feature->id;
             }
         }
 

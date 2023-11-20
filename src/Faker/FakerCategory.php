@@ -94,7 +94,7 @@ class FakerCategory
 
             // Remove category from remaining available categories
             $randomOffset = array_search($category, self::$randomAvailableCategories);
-            if (!empty($randomOffset) && $randomOffset < count(self::$randomAvailableCategories)) {
+            if (false !== $randomOffset && $randomOffset < count(self::$randomAvailableCategories)) {
                 array_splice(self::$randomAvailableCategories, $randomOffset, 1);
             }
         }

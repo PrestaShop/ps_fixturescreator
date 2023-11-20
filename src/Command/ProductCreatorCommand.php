@@ -63,7 +63,6 @@ class ProductCreatorCommand extends Command
             ->addOption('productsWithCombinations', null, InputOption::VALUE_OPTIONAL, 'Number of products with combinations to create', 0)
             ->addOption('shopId', null, InputOption::VALUE_OPTIONAL, 'The shop identifier', 1)
             ->addOption('shopGroupId', null, InputOption::VALUE_OPTIONAL, 'The shop group identifier', 1)
-            ->addOption('languageId', null, InputOption::VALUE_OPTIONAL, 'The languageId identifier', 1)
             ->addOption('attributeGroups', null, InputOption::VALUE_OPTIONAL, 'Number of attribute groups per product', 2)
             ->addOption('attributes', null, InputOption::VALUE_OPTIONAL, 'Number of attributes per attribute group', 5)
             ->addOption('features', null, InputOption::VALUE_OPTIONAL, 'Number of features per product', 2)
@@ -76,8 +75,7 @@ class ProductCreatorCommand extends Command
         \Context::getContext()->currency = \Currency::getDefaultCurrency();
 
         $numberOfProducts = (int) $input->getOption('products');
-        $idLang = (int) $input->getOption('languageId');
-        $idshop = (int) $input->getOption('shopId');
+        $shopId = (int) $input->getOption('shopId');
         $numberOfAttributeGroups = (int) $input->getOption('attributeGroups');
         $numberOfAttributes = (int) $input->getOption('attributes');
         $numberOfFeatures = (int) $input->getOption('features');
@@ -86,7 +84,7 @@ class ProductCreatorCommand extends Command
 
         // create products
         if (!empty($numberOfProducts)) {
-            $this->productCreator->generate($numberOfProducts, $numberOfFeatures, $numberOfFeatureValues, $idshop);
+            $this->productCreator->generate($numberOfProducts, $numberOfFeatures, $numberOfFeatureValues, $shopId);
             $output->writeln(sprintf('%s product(s) created', $numberOfProducts));
         }
 
@@ -98,7 +96,7 @@ class ProductCreatorCommand extends Command
                 $numberOfAttributes,
                 $numberOfFeatures,
                 $numberOfFeatureValues,
-                $idshop
+                $shopId
             );
             $output->writeln(sprintf('%s product(s) with combinations created', $productsWithCombinations));
         }

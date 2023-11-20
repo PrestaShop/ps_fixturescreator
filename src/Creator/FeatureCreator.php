@@ -54,13 +54,15 @@ class FeatureCreator
     public function generate(int $featuresNumber, int $valuesPerFeatureNumber, int $shopId): array
     {
         $languages = $this->langRepository->findAll();
+        $totalFeatureNumber = Feature::nbFeatures(1);
 
         $generatedFeatures = [];
         for ($i = 1; $i <= $featuresNumber; ++$i) {
             $fakerCategory = FakerCategory::getCategory();
-            $feature = $this->createFeature($fakerCategory, $languages, $shopId);
+            $featureOffset = $totalFeatureNumber + $i;
+            $feature = $this->createFeature($fakerCategory, $featureOffset, $languages, $shopId);
             for ($j = 1; $j <= $valuesPerFeatureNumber; ++$j) {
-                $this->createFeatureValue($feature, $j, $fakerCategory, $languages, $shopId);
+                $this->createFeatureValue($feature, $featureOffset + $j, $fakerCategory, $languages, $shopId);
             }
             $generatedFeatures[] = $feature;
         }
@@ -70,18 +72,19 @@ class FeatureCreator
 
     /**
      * @param FakerCategory $fakerCategory
+     * @param int $featureOffset Add offset to avoid duplicate names
      * @param Lang[] $languages
      * @param int $shopId
      *
      * @return Feature
      */
-    private function createFeature(FakerCategory $fakerCategory, array $languages, int $shopId): Feature
+    private function createFeature(FakerCategory $fakerCategory, int $featureOffset, array $languages, int $shopId): Feature
     {
         $feature = new Feature();
         $feature->id_shop_list = [$shopId];
         $names = [];
         foreach ($languages as $lang) {
-            $names[$lang->getId()] = $fakerCategory->getCategoryName() . ' ' . $lang->getLocale();
+            $names[$lang->getId()] = $fakerCategory->getCategoryName() . ' ' . $featureOffset . ' ' . $lang->getLocale();
         }
         $feature->name = $names;
         $feature->add();
@@ -91,19 +94,19 @@ class FeatureCreator
 
     /**
      * @param Feature $feature
-     * @param int $offset
+     * @param int $featureOffset Add offset to avoid duplicate names
      * @param FakerCategory $fakerCategory
      * @param Lang[] $languages
      * @param int $shopId
      */
-    private function createFeatureValue(Feature $feature, int $offset, FakerCategory $fakerCategory, array $languages, int $shopId): void
+    private function createFeatureValue(Feature $feature, int $featureOffset, FakerCategory $fakerCategory, array $languages, int $shopId): void
     {
         $featureValue = new FeatureValue();
         $featureValue->id_feature = $feature->id;
         $featureValue->id_shop_list = [$shopId];
         $values = [];
         foreach ($languages as $lang) {
-            $values[$lang->getId()] = $fakerCategory->getCategoryValue($lang->getLocale()) . ' ' . $offset;
+            $values[$lang->getId()] = $fakerCategory->getCategoryValue($lang->getLocale()) . ' ' . $featureOffset;
         }
         $featureValue->value = $values;
         $featureValue->add();
