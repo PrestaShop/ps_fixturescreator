@@ -17,7 +17,7 @@ use PrestaShopBundle\Entity\AttributeGroup;
 use PrestaShopBundle\Entity\Lang;
 use PrestaShopBundle\Entity\Repository\LangRepository;
 
-class ProductCombinationCreator
+class ProductCombinationCreator extends AbstractProductCreator
 {
     private EntityManagerInterface $entityManager;
 
@@ -34,8 +34,12 @@ class ProductCombinationCreator
         CommandBusInterface $commandBus,
         AttributeCreator $attributeCreator,
         LangRepository $langRepository,
+        FeatureCreator $featureCreator,
+        Connection $connection,
+        string $dbPrefix,
         Generator $faker
     ) {
+        parent::__construct($featureCreator, $connection, $dbPrefix);
         $this->entityManager = $entityManager;
         $this->commandBus = $commandBus;
         $this->attributeCreator = $attributeCreator;
@@ -43,8 +47,14 @@ class ProductCombinationCreator
         $this->faker = $faker;
     }
 
-    public function generate(int $productWithCombinations, int $attributeGroupNumber, int $attributeValuePerGroupNumber, int $shopId): void
-    {
+    public function generate(
+        int $productWithCombinations,
+        int $attributeGroupNumber,
+        int $attributeValuePerGroupNumber,
+        int $numberOfFeatures,
+        int $numberOfFeatureValues,
+        int $shopId
+    ): void {
         $attributeGroups = $this->getAttributeGroupWithAtLeast($attributeValuePerGroupNumber);
         // Create the missing attribute groups if needed
         if (count($attributeGroups) < $attributeGroupNumber) {
@@ -90,6 +100,8 @@ class ProductCombinationCreator
             } else {
                 throw new \RuntimeException(sprintf('Version %s not handled to generate combinations', _PS_VERSION_));
             }
+
+            $this->associateFeatures($newProductId->getValue(), $numberOfFeatures, $numberOfFeatureValues, $shopId);
         }
     }
 

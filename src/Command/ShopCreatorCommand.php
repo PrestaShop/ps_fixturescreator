@@ -31,9 +31,8 @@ use PrestaShop\Module\PsFixturesCreator\Creator\AttributeCreator;
 use PrestaShop\Module\PsFixturesCreator\Creator\CartCreator;
 use PrestaShop\Module\PsFixturesCreator\Creator\CartRuleCreator;
 use PrestaShop\Module\PsFixturesCreator\Creator\CustomerCreator;
+use PrestaShop\Module\PsFixturesCreator\Creator\FeatureCreator;
 use PrestaShop\Module\PsFixturesCreator\Creator\OrderCreator;
-use PrestaShop\Module\PsFixturesCreator\Creator\ProductCombinationCreator;
-use PrestaShop\Module\PsFixturesCreator\Creator\ProductCreator;
 use Shop;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -53,20 +52,17 @@ class ShopCreatorCommand extends Command
 
     private CartRuleCreator $cartRuleCreator;
 
-    private ProductCreator $productCreator;
-
     private AttributeCreator $attributeCreator;
 
-    private ProductCombinationCreator $productCombinationCreator;
+    private FeatureCreator $featureCreator;
 
     public function __construct(
         CustomerCreator $customerCreator,
         CartCreator $cartCreator,
         OrderCreator $orderCreator,
         CartRuleCreator $cartRuleCreator,
-        ProductCreator $productCreator,
         AttributeCreator $attributeCreator,
-        ProductCombinationCreator $productCombinationCreator
+        FeatureCreator $featureCreator
     ) {
         parent::__construct(null);
 
@@ -74,9 +70,8 @@ class ShopCreatorCommand extends Command
         $this->cartCreator = $cartCreator;
         $this->orderCreator = $orderCreator;
         $this->cartRuleCreator = $cartRuleCreator;
-        $this->productCreator = $productCreator;
         $this->attributeCreator = $attributeCreator;
-        $this->productCombinationCreator = $productCombinationCreator;
+        $this->featureCreator = $featureCreator;
     }
 
     /**
@@ -90,13 +85,13 @@ class ShopCreatorCommand extends Command
             ->addOption('customers', null, InputOption::VALUE_OPTIONAL, 'Number of customers without order to create', 0)
             ->addOption('carts', null, InputOption::VALUE_OPTIONAL, 'Number of carts to create', 0)
             ->addOption('cart-rules', null, InputOption::VALUE_OPTIONAL, 'Number of cart rules to create', 0)
-            ->addOption('products', null, InputOption::VALUE_OPTIONAL, 'Number of products to create', 0)
-            ->addOption('productsWithCombinations', null, InputOption::VALUE_OPTIONAL, 'Number of products with combinations to create', 0)
             ->addOption('shopId', null, InputOption::VALUE_OPTIONAL, 'The shop identifier', 1)
             ->addOption('shopGroupId', null, InputOption::VALUE_OPTIONAL, 'The shop group identifier', 1)
             ->addOption('languageId', null, InputOption::VALUE_OPTIONAL, 'The languageId identifier', 1)
             ->addOption('attributeGroups', null, InputOption::VALUE_OPTIONAL, 'Number of attribute groups', 0)
             ->addOption('attributes', null, InputOption::VALUE_OPTIONAL, 'Number of attributes per attribute group', 10)
+            ->addOption('features', null, InputOption::VALUE_OPTIONAL, 'Number of features', 0)
+            ->addOption('featureValues', null, InputOption::VALUE_OPTIONAL, 'Number of values per feature', 10)
         ;
     }
 
@@ -108,13 +103,13 @@ class ShopCreatorCommand extends Command
         $numberOfCustomerWithoutOrder = (int) $input->getOption('customers');
         $numberOfCarts = (int) $input->getOption('carts');
         $numberOfCartRules = (int) $input->getOption('cart-rules');
-        $numberOfProducts = (int) $input->getOption('products');
         $idLang = (int) $input->getOption('languageId');
         $idshop = (int) $input->getOption('shopId');
         $idShopGroup = (int) $input->getOption('shopGroupId');
         $numberOfAttributeGroups = (int) $input->getOption('attributeGroups');
         $numberOfAttributes = (int) $input->getOption('attributes');
-        $productsWithCombinations = (int) $input->getOption('productsWithCombinations');
+        $numberOfFeatures = (int) $input->getOption('features');
+        $numberOfFeatureValues = (int) $input->getOption('featureValues');
 
         $productIds = $this->getStandardProducts($idLang);
 
@@ -130,22 +125,16 @@ class ShopCreatorCommand extends Command
             $output->writeln(sprintf('%s cart rule(s) created.', $numberOfCartRules));
         }
 
-        // create products
-        if (!empty($numberOfProducts)) {
-            $this->productCreator->generate($numberOfProducts, $idLang);
-            $output->writeln(sprintf('%s product(s) created', $numberOfProducts));
+        // create features
+        if ($numberOfFeatures > 0 && $numberOfFeatureValues > 0) {
+            $this->featureCreator->generate($numberOfFeatures, $numberOfFeatureValues, $idshop);
+            $output->writeln(sprintf('Created %s feature(s) with %s different values each.', $numberOfFeatures, $numberOfFeatureValues));
         }
 
-        // create product with combinations, if attributes are needed they will be created dynamically
-        if (!empty($productsWithCombinations)) {
-            $this->productCombinationCreator->generate($productsWithCombinations, $numberOfAttributeGroups, $numberOfAttributes, $idshop);
-            $output->writeln(sprintf('%s product(s) with combinations created', $productsWithCombinations));
-        } else {
-            // If not product with combinations asked, simply create attributes
-            if ($numberOfAttributeGroups > 0 && $numberOfAttributes > 0) {
-                $this->attributeCreator->generate($numberOfAttributeGroups, $numberOfAttributes, $idshop);
-                $output->writeln(sprintf('Created %s attribute group(s) with %s different values each.', $numberOfAttributeGroups, $numberOfAttributes));
-            }
+        // Create attributes
+        if ($numberOfAttributeGroups > 0 && $numberOfAttributes > 0) {
+            $this->attributeCreator->generate($numberOfAttributeGroups, $numberOfAttributes, $idshop);
+            $output->writeln(sprintf('Created %s attribute group(s) with %s different values each.', $numberOfAttributeGroups, $numberOfAttributes));
         }
 
         // Carts and orders are created last, so they can use new products randomly
