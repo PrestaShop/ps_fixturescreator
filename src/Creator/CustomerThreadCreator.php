@@ -61,8 +61,6 @@ class CustomerThreadCreator
         $ordersCount = $this->getEntityCount('orders');
         $productsCount = $this->getEntityCount('product');
 
-        $faker = \Faker\Factory::create();
-
         for ($i = 0; $i < $threadsNumber; ++$i) {
             $thread = new \CustomerThreadCore();
             $thread->id_shop = $shopId;
@@ -74,7 +72,7 @@ class CustomerThreadCreator
             $thread->email = $this->faker->email;
             $thread->token = md5(uniqid());
             $thread->status = 'open';
-            $thread->date_add = $faker->dateTimeBetween('2020-01-01', 'now')->format('Y-m-d H:i:s');
+            $thread->date_add = $this->faker->dateTimeBetween('2020-01-01', 'now')->format('Y-m-d H:i:s');
             $thread->date_upd = date('Y-m-d H:i:s');
 
             $thread->add(false);
