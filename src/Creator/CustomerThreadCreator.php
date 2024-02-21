@@ -90,7 +90,7 @@ class CustomerThreadCreator
         $count = $this->connection->createQueryBuilder()
             ->select('COUNT(*) AS count')
             ->from($this->dbPrefix . $tableName)
-            ->executeQuery()
+            ->execute()
             ->fetchOne();
 
         return (int) $count;
