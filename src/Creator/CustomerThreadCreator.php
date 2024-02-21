@@ -57,8 +57,6 @@ class CustomerThreadCreator
         $generatedThreads = [];
 
         $contactsCount = $this->getEntityCount('contact');
-        $customersCount = $this->getEntityCount('customer');
-        $ordersCount = $this->getEntityCount('orders');
         $productsCount = $this->getEntityCount('product');
 
         for ($i = 0; $i < $threadsNumber; ++$i) {
