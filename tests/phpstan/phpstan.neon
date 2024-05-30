@@ -2,7 +2,7 @@ includes:
 	- %currentWorkingDirectory%/vendor/prestashop/php-dev-tools/phpstan/ps-module-extension.neon
 parameters:
   paths:
-    - ../../psfixturescreator.php
+    - ../../ps_fixturescreator.php
     - ../../src/
   level: 5
   ignoreErrors:

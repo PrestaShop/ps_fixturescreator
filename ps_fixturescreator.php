@@ -13,7 +13,7 @@ class PsFixturesCreator extends Module
 {
     public function __construct()
     {
-        $this->name = 'psfixturescreator';
+        $this->name = 'ps_fixturescreator';
         $this->tab = 'administration';
         $this->version = '1.0.0';
         $this->author = 'PrestaShop';

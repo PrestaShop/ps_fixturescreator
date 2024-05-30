@@ -8,10 +8,7 @@ This module was desiged to load an heavy set of data into PrestaShop. Then you c
 
 ### Install and configure module
 
-Install the module:
-- use `git clone` to clone this repository inside `modules/` folder
-- make sure the folder name is `psfixturescreator` (the folder name and the main PHP module name must match)
-
+Install the module by using `git clone` to clone this repository inside `modules/` folder.
 
 ### Bash steps
 
@@ -19,11 +16,11 @@ Here is how to do the previous steps all in CLI, from the shop root folder:
 
 ```
 cd modules/
-git clone git@github.com:PrestaShop/PsFixturesCreator.git psfixturescreator
-cd psfixturescreator/
+git clone git@github.com:PrestaShop/PsFixturesCreator.git .
+cd ps_fixturescreator/
 composer install
 cd ../..
-php bin/console prestashop:module install psfixturescreator
+php bin/console prestashop:module install ps_fixturescreator
 php bin/console cache:clear
 ```
 

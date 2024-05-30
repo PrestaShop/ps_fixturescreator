@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <module>
-    <name>psfixturescreator</name>
+    <name>ps_fixturescreator</name>
     <displayName><![CDATA[PS Fixtures Creator]]></displayName>
     <version><![CDATA[1.0.0]]></version>
     <description><![CDATA[Module to create fixtures for PrestaShop]]></description>
