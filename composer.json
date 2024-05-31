@@ -12,7 +12,7 @@
       "PrestaShop\\Module\\PsFixturesCreator\\": "src/"
     },
     "classmap": [
-      "psfixturescreator.php"
+      "ps_fixturescreator.php"
     ],
     "exclude-from-classmap": []
   },
