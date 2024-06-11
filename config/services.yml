@@ -1,72 +1,72 @@
 services:
     Faker\Generator:
-      factory: ['PrestaShop\Module\PsFixturesCreator\Faker\FakerFactory', 'create']
+      factory: ['PrestaShop\Module\ps_fixturescreator\Faker\FakerFactory', 'create']
       arguments:
         - 'en_EN'
 
-    PrestaShop\Module\PsFixturesCreator\Creator\CustomerCreator:
+    PrestaShop\Module\ps_fixturescreator\Creator\CustomerCreator:
       arguments:
         $faker: '@Faker\Generator'
 
-    PrestaShop\Module\PsFixturesCreator\Creator\CartCreator:
+    PrestaShop\Module\ps_fixturescreator\Creator\CartCreator:
       arguments:
         $faker: '@Faker\Generator'
 
-    PrestaShop\Module\PsFixturesCreator\Creator\CartRuleCreator:
+    PrestaShop\Module\ps_fixturescreator\Creator\CartRuleCreator:
       arguments:
         $faker: '@Faker\Generator'
 
-    PrestaShop\Module\PsFixturesCreator\Creator\ProductCreator:
+    PrestaShop\Module\ps_fixturescreator\Creator\ProductCreator:
       arguments:
         $langRepository: '@prestashop.core.admin.lang.repository'
-        $featureCreator: '@PrestaShop\Module\PsFixturesCreator\Creator\FeatureCreator'
+        $featureCreator: '@PrestaShop\Module\ps_fixturescreator\Creator\FeatureCreator'
         $connection: '@doctrine.dbal.default_connection'
         $dbPrefix: '%database_prefix%'
         $faker: '@Faker\Generator'
 
-    PrestaShop\Module\PsFixturesCreator\Creator\OrderCreator:
+    PrestaShop\Module\ps_fixturescreator\Creator\OrderCreator:
       arguments:
         $faker: '@Faker\Generator'
-        $customerCreator: '@PrestaShop\Module\PsFixturesCreator\Creator\CustomerCreator'
-        $cartCreator: '@PrestaShop\Module\PsFixturesCreator\Creator\CartCreator'
+        $customerCreator: '@PrestaShop\Module\ps_fixturescreator\Creator\CustomerCreator'
+        $cartCreator: '@PrestaShop\Module\ps_fixturescreator\Creator\CartCreator'
 
-    PrestaShop\Module\PsFixturesCreator\Creator\AttributeCreator:
+    PrestaShop\Module\ps_fixturescreator\Creator\AttributeCreator:
       arguments:
         $entityManager: '@doctrine.orm.entity_manager'
         $langRepository: '@prestashop.core.admin.lang.repository'
         $shopRepository: '@prestashop.core.admin.shop.repository'
 
-    PrestaShop\Module\PsFixturesCreator\Creator\FeatureCreator:
+    PrestaShop\Module\ps_fixturescreator\Creator\FeatureCreator:
       arguments:
         $langRepository: '@prestashop.core.admin.lang.repository'
 
-    PrestaShop\Module\PsFixturesCreator\Creator\ProductCombinationCreator:
+    PrestaShop\Module\ps_fixturescreator\Creator\ProductCombinationCreator:
       arguments:
         $entityManager: '@doctrine.orm.entity_manager'
         $commandBus: '@prestashop.core.command_bus'
-        $attributeCreator: '@PrestaShop\Module\PsFixturesCreator\Creator\AttributeCreator'
+        $attributeCreator: '@PrestaShop\Module\ps_fixturescreator\Creator\AttributeCreator'
         $langRepository: '@prestashop.core.admin.lang.repository'
-        $featureCreator: '@PrestaShop\Module\PsFixturesCreator\Creator\FeatureCreator'
+        $featureCreator: '@PrestaShop\Module\ps_fixturescreator\Creator\FeatureCreator'
         $connection: '@doctrine.dbal.default_connection'
         $dbPrefix: '%database_prefix%'
         $faker: '@Faker\Generator'
 
-    PrestaShop\Module\PsFixturesCreator\Command\ShopCreatorCommand:
-        class: PrestaShop\Module\PsFixturesCreator\Command\ShopCreatorCommand
+    PrestaShop\Module\ps_fixturescreator\Command\ShopCreatorCommand:
+        class: PrestaShop\Module\ps_fixturescreator\Command\ShopCreatorCommand
         arguments:
-          $customerCreator: '@PrestaShop\Module\PsFixturesCreator\Creator\CustomerCreator'
-          $cartCreator: '@PrestaShop\Module\PsFixturesCreator\Creator\CartCreator'
-          $orderCreator: '@PrestaShop\Module\PsFixturesCreator\Creator\OrderCreator'
-          $cartRuleCreator: '@PrestaShop\Module\PsFixturesCreator\Creator\CartRuleCreator'
-          $attributeCreator: '@PrestaShop\Module\PsFixturesCreator\Creator\AttributeCreator'
-          $featureCreator: '@PrestaShop\Module\PsFixturesCreator\Creator\FeatureCreator'
+          $customerCreator: '@PrestaShop\Module\ps_fixturescreator\Creator\CustomerCreator'
+          $cartCreator: '@PrestaShop\Module\ps_fixturescreator\Creator\CartCreator'
+          $orderCreator: '@PrestaShop\Module\ps_fixturescreator\Creator\OrderCreator'
+          $cartRuleCreator: '@PrestaShop\Module\ps_fixturescreator\Creator\CartRuleCreator'
+          $attributeCreator: '@PrestaShop\Module\ps_fixturescreator\Creator\AttributeCreator'
+          $featureCreator: '@PrestaShop\Module\ps_fixturescreator\Creator\FeatureCreator'
         tags:
             - { name: 'console.command' }
 
-    PrestaShop\Module\PsFixturesCreator\Command\ProductCreatorCommand:
-      class: PrestaShop\Module\PsFixturesCreator\Command\ProductCreatorCommand
+    PrestaShop\Module\ps_fixturescreator\Command\ProductCreatorCommand:
+      class: PrestaShop\Module\ps_fixturescreator\Command\ProductCreatorCommand
       arguments:
-        $productCreator: '@PrestaShop\Module\PsFixturesCreator\Creator\ProductCreator'
-        $productCombinationCreator: '@PrestaShop\Module\PsFixturesCreator\Creator\ProductCombinationCreator'
+        $productCreator: '@PrestaShop\Module\ps_fixturescreator\Creator\ProductCreator'
+        $productCombinationCreator: '@PrestaShop\Module\ps_fixturescreator\Creator\ProductCombinationCreator'
       tags:
         - { name: 'console.command' }

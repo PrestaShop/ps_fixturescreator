@@ -1,6 +1,6 @@
 <?php
 
-namespace PrestaShop\Module\PsFixturesCreator\Creator;
+namespace PrestaShop\Module\ps_fixturescreator\Creator;
 
 use Customer;
 use Faker\Generator as Faker;
