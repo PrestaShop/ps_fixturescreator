@@ -26,11 +26,11 @@
 
 declare(strict_types=1);
 
-namespace PrestaShop\Module\PsFixturesCreator\Creator;
+namespace PrestaShop\Module\ps_fixturescreator\Creator;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Query;
-use PrestaShop\Module\PsFixturesCreator\Faker\FakerCategory;
+use PrestaShop\Module\ps_fixturescreator\Faker\FakerCategory;
 use PrestaShopBundle\Entity\Attribute;
 use PrestaShopBundle\Entity\AttributeGroup;
 use PrestaShopBundle\Entity\AttributeGroupLang;

@@ -26,7 +26,7 @@
 
 declare(strict_types=1);
 
-namespace PrestaShop\Module\PsFixturesCreator\Creator;
+namespace PrestaShop\Module\ps_fixturescreator\Creator;
 
 use Doctrine\DBAL\Connection;
 
