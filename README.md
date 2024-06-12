@@ -16,7 +16,7 @@ The previous tool, prestashop-shop-creator, became progressively unmaintainable.
 
 This tool has then been created in a 'dummy' way on purpose: all it does is call `new` on ObjectModel plenty times to create the needed objects.
 
-**You should not use the generation action inside a CI or a  a performance test**. Instead, use the tool to load the shop with your fake data, then export the data as SQL files. Use these SQL files in your CI or performance tests: it will be predictible, fast, and controlled.
+**You should not use the generation action inside a CI or a performance test**. Instead, use the tool to load the shop with your fake data, then export the data as SQL files. Use these SQL files in your CI or performance tests: it will be predictible, fast, and controlled.
 
 ## Install
 
