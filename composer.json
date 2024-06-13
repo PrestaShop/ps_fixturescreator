@@ -9,7 +9,7 @@
   ],
   "autoload": {
     "psr-4": {
-      "PrestaShop\\Module\\ps_fixturescreator\\": "src/"
+      "PrestaShop\\Module\\PsFixturesCreator\\": "src/"
     },
     "classmap": [
       "ps_fixturescreator.php"

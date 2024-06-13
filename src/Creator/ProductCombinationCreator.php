@@ -1,6 +1,6 @@
 <?php
 
-namespace PrestaShop\Module\ps_fixturescreator\Creator;
+namespace PrestaShop\Module\PsFixturesCreator\Creator;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\ORM\EntityManagerInterface;

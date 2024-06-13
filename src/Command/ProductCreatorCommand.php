@@ -24,10 +24,10 @@
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
  */
 
-namespace PrestaShop\Module\ps_fixturescreator\Command;
+namespace PrestaShop\Module\PsFixturesCreator\Command;
 
-use PrestaShop\Module\ps_fixturescreator\Creator\ProductCombinationCreator;
-use PrestaShop\Module\ps_fixturescreator\Creator\ProductCreator;
+use PrestaShop\Module\PsFixturesCreator\Creator\ProductCombinationCreator;
+use PrestaShop\Module\PsFixturesCreator\Creator\ProductCreator;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
