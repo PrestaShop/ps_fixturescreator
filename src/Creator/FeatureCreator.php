@@ -26,11 +26,11 @@
 
 declare(strict_types=1);
 
-namespace PrestaShop\Module\ps_fixturescreator\Creator;
+namespace PrestaShop\Module\PsFixturesCreator\Creator;
 
 use Feature;
 use FeatureValue;
-use PrestaShop\Module\ps_fixturescreator\Faker\FakerCategory;
+use PrestaShop\Module\PsFixturesCreator\Faker\FakerCategory;
 use PrestaShopBundle\Entity\Lang;
 use PrestaShopBundle\Entity\Repository\LangRepository;
 

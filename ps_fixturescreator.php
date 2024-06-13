@@ -9,7 +9,7 @@ if (file_exists($autoloadPath)) {
     require_once $autoloadPath;
 }
 
-class ps_fixturescreator extends Module
+class PsFixturesCreator extends Module
 {
     public function __construct()
     {

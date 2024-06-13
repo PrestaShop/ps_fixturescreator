@@ -26,7 +26,7 @@
 
 declare(strict_types=1);
 
-namespace PrestaShop\Module\ps_fixturescreator\Faker;
+namespace PrestaShop\Module\PsFixturesCreator\Faker;
 
 use Bezhanov\Faker\ProviderCollectionHelper;
 use Faker\Factory;
