@@ -31,6 +31,7 @@ use PrestaShop\Module\PsFixturesCreator\Creator\AttributeCreator;
 use PrestaShop\Module\PsFixturesCreator\Creator\CartCreator;
 use PrestaShop\Module\PsFixturesCreator\Creator\CartRuleCreator;
 use PrestaShop\Module\PsFixturesCreator\Creator\CustomerCreator;
+use PrestaShop\Module\PsFixturesCreator\Creator\CustomerThreadCreator;
 use PrestaShop\Module\PsFixturesCreator\Creator\FeatureCreator;
 use PrestaShop\Module\PsFixturesCreator\Creator\OrderCreator;
 use Shop;
@@ -56,13 +57,16 @@ class ShopCreatorCommand extends Command
 
     private FeatureCreator $featureCreator;
 
+    private CustomerThreadCreator $customerThreadCreator;
+
     public function __construct(
         CustomerCreator $customerCreator,
         CartCreator $cartCreator,
         OrderCreator $orderCreator,
         CartRuleCreator $cartRuleCreator,
         AttributeCreator $attributeCreator,
-        FeatureCreator $featureCreator
+        FeatureCreator $featureCreator,
+        CustomerThreadCreator $customerThreadCreator
     ) {
         parent::__construct(null);
 
@@ -72,6 +76,7 @@ class ShopCreatorCommand extends Command
         $this->cartRuleCreator = $cartRuleCreator;
         $this->attributeCreator = $attributeCreator;
         $this->featureCreator = $featureCreator;
+        $this->customerThreadCreator = $customerThreadCreator;
     }
 
     /**
@@ -92,6 +97,7 @@ class ShopCreatorCommand extends Command
             ->addOption('attributes', null, InputOption::VALUE_OPTIONAL, 'Number of attributes per attribute group', 10)
             ->addOption('features', null, InputOption::VALUE_OPTIONAL, 'Number of features', 0)
             ->addOption('featureValues', null, InputOption::VALUE_OPTIONAL, 'Number of values per feature', 10)
+            ->addOption('threads', null, InputOption::VALUE_OPTIONAL, 'Number of threads to create', 0)
         ;
     }
 
@@ -110,6 +116,7 @@ class ShopCreatorCommand extends Command
         $numberOfAttributes = (int) $input->getOption('attributes');
         $numberOfFeatures = (int) $input->getOption('features');
         $numberOfFeatureValues = (int) $input->getOption('featureValues');
+        $numberOfThreads = (int) $input->getOption('threads');
 
         $productIds = $this->getStandardProducts($idLang);
 
@@ -148,6 +155,12 @@ class ShopCreatorCommand extends Command
         if (!empty($numberOfOrders)) {
             $this->orderCreator->generate($numberOfOrders, $idShopGroup, $idshop, $productIds);
             $output->writeln(sprintf('%s order(s) created.', $numberOfOrders));
+        }
+
+        // Create customer threads
+        if (!empty($numberOfThreads)) {
+            $this->customerThreadCreator->generate($numberOfThreads, $idshop);
+            $output->writeln(sprintf('%s threads(s) created', $numberOfThreads));
         }
 
         return 0;

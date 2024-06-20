@@ -60,6 +60,7 @@ services:
           $cartRuleCreator: '@PrestaShop\Module\PsFixturesCreator\Creator\CartRuleCreator'
           $attributeCreator: '@PrestaShop\Module\PsFixturesCreator\Creator\AttributeCreator'
           $featureCreator: '@PrestaShop\Module\PsFixturesCreator\Creator\FeatureCreator'
+          $customerThreadCreator: '@PrestaShop\Module\PsFixturesCreator\Creator\CustomerThreadCreator'
         tags:
             - { name: 'console.command' }
 
@@ -68,5 +69,18 @@ services:
       arguments:
         $productCreator: '@PrestaShop\Module\PsFixturesCreator\Creator\ProductCreator'
         $productCombinationCreator: '@PrestaShop\Module\PsFixturesCreator\Creator\ProductCombinationCreator'
+      tags:
+        - { name: 'console.command' }
+
+    PrestaShop\Module\PsFixturesCreator\Creator\CustomerThreadCreator:
+      autowire: true
+      autoconfigure: true
+      arguments:
+        $dbPrefix: '%database_prefix%'
+    
+    PrestaShop\Module\PsFixturesCreator\Command\CustomerThreadCreatorCommand:
+      class: PrestaShop\Module\PsFixturesCreator\Command\CustomerThreadCreatorCommand
+      autowire: true
+      autoconfigure: true
       tags:
         - { name: 'console.command' }
