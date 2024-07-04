@@ -23,6 +23,7 @@ services:
         $connection: '@doctrine.dbal.default_connection'
         $dbPrefix: '%database_prefix%'
         $faker: '@Faker\Generator'
+        $commandBus: '@prestashop.core.command_bus'
 
     PrestaShop\Module\PsFixturesCreator\Creator\OrderCreator:
       arguments:

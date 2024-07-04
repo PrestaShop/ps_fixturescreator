@@ -2,8 +2,13 @@
 
 namespace PrestaShop\Module\PsFixturesCreator\Creator;
 
+use Context;
 use Doctrine\DBAL\Connection;
+use Employee;
 use Faker\Generator as Faker;
+use PrestaShop\PrestaShop\Core\CommandBus\CommandBusInterface;
+use PrestaShop\PrestaShop\Core\Domain\Product\Stock\Command\UpdateProductStockAvailableCommand;
+use PrestaShop\PrestaShop\Core\Domain\Shop\ValueObject\ShopConstraint;
 use PrestaShopBundle\Entity\Lang;
 use PrestaShopBundle\Entity\Repository\LangRepository;
 use Product;
@@ -13,27 +18,31 @@ class ProductCreator extends AbstractProductCreator
     private LangRepository $langRepository;
     private Faker $faker;
 
+    private CommandBusInterface $commandBus;
+
     public function __construct(
         LangRepository $langRepository,
         FeatureCreator $featureCreator,
         Connection $connection,
         string $dbPrefix,
-        Faker $faker
+        Faker $faker,
+        CommandBusInterface $commandBus
     ) {
         parent::__construct($featureCreator, $connection, $dbPrefix);
         $this->langRepository = $langRepository;
         $this->faker = $faker;
+        $this->commandBus = $commandBus;
     }
 
-    public function generate(int $number, int $numberOfFeatures, int $numberOfFeatureValues, int $shopId): void
+    public function generate(int $number, int $numberOfFeatures, int $numberOfFeatureValues, int $shopId, int $stockQuantity): void
     {
         for ($i = 0; $i < $number; ++$i) {
-            $productId = $this->createProduct($shopId);
+            $productId = $this->createProduct($shopId, $stockQuantity);
             $this->associateFeatures($productId, $numberOfFeatures, $numberOfFeatureValues, $shopId);
         }
     }
 
-    private function createProduct(int $shopId): int
+    private function createProduct(int $shopId, int $stockQuantity): int
     {
         $product = new Product();
         $product->id_shop_list = [$shopId];
@@ -60,7 +69,22 @@ class ProductCreator extends AbstractProductCreator
 
         $categories = [2, 3, 4];
         $product->updateCategories($categories);
+        $this->updateInStockQuantity($product->id, $shopId, $stockQuantity);
 
         return $product->id;
+    }
+
+    private function updateInStockQuantity(int $productId, int $shopId, int $stockQuantity): void
+    {
+        // Because we could be in CLI mode, there might be no employee in context, so we must set it manually
+        $context = Context::getContext();
+        if (!isset($context->employee) || !isset($context->employee->id)) {
+            $context->employee = new Employee(1);
+        }
+
+        $shopConstraint = ShopConstraint::shop($shopId);
+        $updateStockCommand = new UpdateProductStockAvailableCommand($productId, $shopConstraint);
+        $updateStockCommand->setDeltaQuantity($stockQuantity);
+        $this->commandBus->handle($updateStockCommand);
     }
 }
