@@ -18,17 +18,24 @@ class ProductCreator extends AbstractProductCreator
         FeatureCreator $featureCreator,
         Connection $connection,
         string $dbPrefix,
-        Faker $faker
+        Faker $faker,
+        StockMovementCreator $stockMovementCreator
     ) {
-        parent::__construct($featureCreator, $connection, $dbPrefix);
+        parent::__construct($featureCreator, $stockMovementCreator, $connection, $dbPrefix);
         $this->langRepository = $langRepository;
         $this->faker = $faker;
     }
 
-    public function generate(int $number, int $numberOfFeatures, int $numberOfFeatureValues, int $shopId): void
-    {
+    public function generate(
+        int $number,
+        int $numberOfFeatures,
+        int $numberOfFeatureValues,
+        int $numberOfStockMovements,
+        int $shopId
+    ): void {
         for ($i = 0; $i < $number; ++$i) {
             $productId = $this->createProduct($shopId);
+            $this->associateStockMovements($productId, $numberOfStockMovements);
             $this->associateFeatures($productId, $numberOfFeatures, $numberOfFeatureValues, $shopId);
         }
     }

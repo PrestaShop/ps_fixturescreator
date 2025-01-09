@@ -37,9 +37,10 @@ class ProductCombinationCreator extends AbstractProductCreator
         FeatureCreator $featureCreator,
         Connection $connection,
         string $dbPrefix,
-        Generator $faker
+        Generator $faker,
+        StockMovementCreator $stockMovementCreator
     ) {
-        parent::__construct($featureCreator, $connection, $dbPrefix);
+        parent::__construct($featureCreator, $stockMovementCreator, $connection, $dbPrefix);
         $this->entityManager = $entityManager;
         $this->commandBus = $commandBus;
         $this->attributeCreator = $attributeCreator;
