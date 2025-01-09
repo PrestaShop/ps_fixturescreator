@@ -67,6 +67,7 @@ class ProductCreatorCommand extends Command
             ->addOption('attributes', null, InputOption::VALUE_OPTIONAL, 'Number of attributes per attribute group', 5)
             ->addOption('features', null, InputOption::VALUE_OPTIONAL, 'Number of features per product', 2)
             ->addOption('featureValues', null, InputOption::VALUE_OPTIONAL, 'Number of values per feature', 5)
+            ->addOption('stockMovements', null, InputOption::VALUE_OPTIONAL, 'Number of stock movements per product', 0)
         ;
     }
 
@@ -80,11 +81,18 @@ class ProductCreatorCommand extends Command
         $numberOfAttributes = (int) $input->getOption('attributes');
         $numberOfFeatures = (int) $input->getOption('features');
         $numberOfFeatureValues = (int) $input->getOption('featureValues');
+        $numberOfStockMovements = (int) $input->getOption('stockMovements');
         $productsWithCombinations = (int) $input->getOption('productsWithCombinations');
 
         // create products
         if (!empty($numberOfProducts)) {
-            $this->productCreator->generate($numberOfProducts, $numberOfFeatures, $numberOfFeatureValues, $shopId);
+            $this->productCreator->generate(
+                $numberOfProducts,
+                $numberOfFeatures,
+                $numberOfFeatureValues,
+                $numberOfStockMovements,
+                $shopId
+            );
             $output->writeln(sprintf('%s product(s) created', $numberOfProducts));
         }
 

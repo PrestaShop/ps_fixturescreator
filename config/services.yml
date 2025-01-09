@@ -20,6 +20,7 @@ services:
       arguments:
         $langRepository: '@prestashop.core.admin.lang.repository'
         $featureCreator: '@PrestaShop\Module\PsFixturesCreator\Creator\FeatureCreator'
+        $stockMovementCreator: '@PrestaShop\Module\PsFixturesCreator\Creator\StockMovementCreator'
         $connection: '@doctrine.dbal.default_connection'
         $dbPrefix: '%database_prefix%'
         $faker: '@Faker\Generator'
@@ -47,6 +48,7 @@ services:
         $attributeCreator: '@PrestaShop\Module\PsFixturesCreator\Creator\AttributeCreator'
         $langRepository: '@prestashop.core.admin.lang.repository'
         $featureCreator: '@PrestaShop\Module\PsFixturesCreator\Creator\FeatureCreator'
+        $stockMovementCreator: '@PrestaShop\Module\PsFixturesCreator\Creator\StockMovementCreator'
         $connection: '@doctrine.dbal.default_connection'
         $dbPrefix: '%database_prefix%'
         $faker: '@Faker\Generator'
@@ -63,6 +65,11 @@ services:
           $customerThreadCreator: '@PrestaShop\Module\PsFixturesCreator\Creator\CustomerThreadCreator'
         tags:
             - { name: 'console.command' }
+
+    PrestaShop\Module\PsFixturesCreator\Creator\StockMovementCreator:
+      arguments:
+        $stockManager: '@prestashop.adapter.stock_manager'
+        $stockMvtRepository: '@prestashop.core.api.stock_movement.repository'
 
     PrestaShop\Module\PsFixturesCreator\Command\ProductCreatorCommand:
       class: PrestaShop\Module\PsFixturesCreator\Command\ProductCreatorCommand

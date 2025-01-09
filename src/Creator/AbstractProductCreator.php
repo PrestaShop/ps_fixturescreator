@@ -33,15 +33,18 @@ use Doctrine\DBAL\Connection;
 abstract class AbstractProductCreator
 {
     protected FeatureCreator $featureCreator;
+    protected StockMovementCreator $stockMovementCreator;
     protected Connection $connection;
     protected string $dbPrefix;
 
     public function __construct(
         FeatureCreator $featureCreator,
+        StockMovementCreator $stockMovementCreator,
         Connection $connection,
         string $dbPrefix
     ) {
         $this->featureCreator = $featureCreator;
+        $this->stockMovementCreator = $stockMovementCreator;
         $this->connection = $connection;
         $this->dbPrefix = $dbPrefix;
     }
@@ -73,6 +76,15 @@ abstract class AbstractProductCreator
             ];
             $this->connection->insert($this->dbPrefix . 'feature_product', $insertedValues);
         }
+    }
+
+    protected function associateStockMovements(int $productId, int $numberOfStockMovements): void
+    {
+        if ($numberOfStockMovements <= 0) {
+            return;
+        }
+
+        $this->stockMovementCreator->generate($numberOfStockMovements, $productId);
     }
 
     protected function getRandomValues(int $featureId, int $numberOfFeatureValues): array
