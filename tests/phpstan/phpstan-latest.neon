@@ -1,2 +1,11 @@
 includes:
-	- %currentWorkingDirectory%/tests/phpstan/phpstan-8.1.neon
+	- %currentWorkingDirectory%/tests/phpstan/phpstan.neon
+
+parameters:
+  ignoreErrors:
+  -
+    message: '#AddProductCommand constructor expects#'
+    path: ../../src/Creator/ProductCombinationCreator.php
+  -
+    message: '#enerateProductCombinationsCommand constructor invoked#'
+    path: ../../src/Creator/ProductCombinationCreator.php
