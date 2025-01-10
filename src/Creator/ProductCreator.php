@@ -36,7 +36,7 @@ class ProductCreator extends AbstractProductCreator
         for ($i = 0; $i < $number; ++$i) {
             $productId = $this->createProduct($shopId);
             $this->associateImages($productId, [], $numberOfImages);
-            $this->associateStockMovements($productId, $numberOfStockMovements);
+            $this->associateStockMovements($productId, [null], $numberOfStockMovements);
             $this->associateFeatures($productId, $numberOfFeatures, $numberOfFeatureValues, $shopId);
         }
     }
