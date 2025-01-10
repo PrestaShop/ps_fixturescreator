@@ -11,7 +11,6 @@ use Product;
 class ProductCreator extends AbstractProductCreator
 {
     private LangRepository $langRepository;
-    private Faker $faker;
 
     public function __construct(
         LangRepository $langRepository,
@@ -19,11 +18,11 @@ class ProductCreator extends AbstractProductCreator
         Connection $connection,
         string $dbPrefix,
         Faker $faker,
-        StockMovementCreator $stockMovementCreator
+        StockMovementCreator $stockMovementCreator,
+        ProductImageCreator $productImageCreator
     ) {
-        parent::__construct($featureCreator, $stockMovementCreator, $connection, $dbPrefix);
+        parent::__construct($featureCreator, $productImageCreator, $stockMovementCreator, $connection, $faker, $dbPrefix);
         $this->langRepository = $langRepository;
-        $this->faker = $faker;
     }
 
     public function generate(
@@ -31,10 +30,12 @@ class ProductCreator extends AbstractProductCreator
         int $numberOfFeatures,
         int $numberOfFeatureValues,
         int $numberOfStockMovements,
+        int $numberOfImages,
         int $shopId
     ): void {
         for ($i = 0; $i < $number; ++$i) {
             $productId = $this->createProduct($shopId);
+            $this->associateImages($productId, [], $numberOfImages);
             $this->associateStockMovements($productId, $numberOfStockMovements);
             $this->associateFeatures($productId, $numberOfFeatures, $numberOfFeatureValues, $shopId);
         }
