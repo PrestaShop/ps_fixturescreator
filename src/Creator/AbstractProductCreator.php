@@ -29,24 +29,31 @@ declare(strict_types=1);
 namespace PrestaShop\Module\PsFixturesCreator\Creator;
 
 use Doctrine\DBAL\Connection;
+use Faker\Generator as Faker;
 
 abstract class AbstractProductCreator
 {
     protected FeatureCreator $featureCreator;
+    protected ProductImageCreator $productImageCreator;
     protected StockMovementCreator $stockMovementCreator;
     protected Connection $connection;
     protected string $dbPrefix;
+    protected Faker $faker;
 
     public function __construct(
         FeatureCreator $featureCreator,
+        ProductImageCreator $productImageCreator,
         StockMovementCreator $stockMovementCreator,
         Connection $connection,
+        Faker $faker,
         string $dbPrefix
     ) {
         $this->featureCreator = $featureCreator;
+        $this->productImageCreator = $productImageCreator;
         $this->stockMovementCreator = $stockMovementCreator;
         $this->connection = $connection;
         $this->dbPrefix = $dbPrefix;
+        $this->faker = $faker;
     }
 
     protected function associateFeatures(int $productId, int $numberOfFeatures, int $numberOfFeatureValues, int $shopId): void
@@ -85,6 +92,15 @@ abstract class AbstractProductCreator
         }
 
         $this->stockMovementCreator->generate($numberOfStockMovements, $productId);
+    }
+
+    protected function associateImages(int $productId, array $combinationsId, int $numberOfImages): void
+    {
+        if ($numberOfImages <= 0) {
+            return;
+        }
+
+        $this->productImageCreator->generate($numberOfImages, $productId, $combinationsId);
     }
 
     protected function getRandomValues(int $featureId, int $numberOfFeatureValues): array

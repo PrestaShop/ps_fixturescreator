@@ -16,10 +16,16 @@ services:
       arguments:
         $faker: '@Faker\Generator'
 
+    PrestaShop\Module\PsFixturesCreator\Creator\ProductImageCreator:
+      arguments:
+        $faker: '@Faker\Generator'
+        $imageCopier : '@prestashop.adapter.import.image_copier'
+
     PrestaShop\Module\PsFixturesCreator\Creator\ProductCreator:
       arguments:
         $langRepository: '@prestashop.core.admin.lang.repository'
         $featureCreator: '@PrestaShop\Module\PsFixturesCreator\Creator\FeatureCreator'
+        $productImageCreator: '@PrestaShop\Module\PsFixturesCreator\Creator\ProductImageCreator'
         $stockMovementCreator: '@PrestaShop\Module\PsFixturesCreator\Creator\StockMovementCreator'
         $connection: '@doctrine.dbal.default_connection'
         $dbPrefix: '%database_prefix%'
@@ -48,6 +54,7 @@ services:
         $attributeCreator: '@PrestaShop\Module\PsFixturesCreator\Creator\AttributeCreator'
         $langRepository: '@prestashop.core.admin.lang.repository'
         $featureCreator: '@PrestaShop\Module\PsFixturesCreator\Creator\FeatureCreator'
+        $productImageCreator: '@PrestaShop\Module\PsFixturesCreator\Creator\ProductImageCreator'
         $stockMovementCreator: '@PrestaShop\Module\PsFixturesCreator\Creator\StockMovementCreator'
         $connection: '@doctrine.dbal.default_connection'
         $dbPrefix: '%database_prefix%'

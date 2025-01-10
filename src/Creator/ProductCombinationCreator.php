@@ -5,9 +5,10 @@ namespace PrestaShop\Module\PsFixturesCreator\Creator;
 use Doctrine\DBAL\Connection;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Query;
-use Faker\Generator;
+use Faker\Generator as Faker;
 use PrestaShop\PrestaShop\Core\CommandBus\CommandBusInterface;
 use PrestaShop\PrestaShop\Core\Domain\Product\Combination\Command\GenerateProductCombinationsCommand;
+use PrestaShop\PrestaShop\Core\Domain\Product\Combination\ValueObject\CombinationId;
 use PrestaShop\PrestaShop\Core\Domain\Product\Command\AddProductCommand;
 use PrestaShop\PrestaShop\Core\Domain\Product\ValueObject\ProductId;
 use PrestaShop\PrestaShop\Core\Domain\Product\ValueObject\ProductType;
@@ -25,8 +26,6 @@ class ProductCombinationCreator extends AbstractProductCreator
 
     private AttributeCreator $attributeCreator;
 
-    private Generator $faker;
-
     private LangRepository $langRepository;
 
     public function __construct(
@@ -37,15 +36,15 @@ class ProductCombinationCreator extends AbstractProductCreator
         FeatureCreator $featureCreator,
         Connection $connection,
         string $dbPrefix,
-        Generator $faker,
-        StockMovementCreator $stockMovementCreator
+        Faker $faker,
+        StockMovementCreator $stockMovementCreator,
+        ProductImageCreator $productImageCreator
     ) {
-        parent::__construct($featureCreator, $stockMovementCreator, $connection, $dbPrefix);
+        parent::__construct($featureCreator, $productImageCreator, $stockMovementCreator, $connection, $faker, $dbPrefix);
         $this->entityManager = $entityManager;
         $this->commandBus = $commandBus;
         $this->attributeCreator = $attributeCreator;
         $this->langRepository = $langRepository;
-        $this->faker = $faker;
     }
 
     public function generate(
@@ -54,6 +53,7 @@ class ProductCombinationCreator extends AbstractProductCreator
         int $attributeValuePerGroupNumber,
         int $numberOfFeatures,
         int $numberOfFeatureValues,
+        int $numberOfImages,
         int $shopId
     ): void {
         $attributeGroups = $this->getAttributeGroupWithAtLeast($attributeValuePerGroupNumber);
@@ -82,7 +82,7 @@ class ProductCombinationCreator extends AbstractProductCreator
                     $productNames
                 ));
 
-                $this->commandBus->handle(new GenerateProductCombinationsCommand(
+                $combinationsIds = $this->commandBus->handle(new GenerateProductCombinationsCommand(
                     $newProductId->getValue(),
                     $combinationAttributes,
                     $shopId ? ShopConstraint::shop($shopId) : ShopConstraint::allShops()
@@ -94,7 +94,7 @@ class ProductCombinationCreator extends AbstractProductCreator
                     $productNames
                 ));
 
-                $this->commandBus->handle(new GenerateProductCombinationsCommand(
+                $combinationsIds = $this->commandBus->handle(new GenerateProductCombinationsCommand(
                     $newProductId->getValue(),
                     $combinationAttributes,
                 ));
@@ -102,6 +102,11 @@ class ProductCombinationCreator extends AbstractProductCreator
                 throw new \RuntimeException(sprintf('Version %s not handled to generate combinations', _PS_VERSION_));
             }
 
+            $combinationsIds = array_map(static function (CombinationId $combination) {
+                return $combination->getValue();
+            }, $combinationsIds);
+
+            $this->associateImages($newProductId->getValue(), $combinationsIds, $numberOfImages);
             $this->associateFeatures($newProductId->getValue(), $numberOfFeatures, $numberOfFeatureValues, $shopId);
         }
     }

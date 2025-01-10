@@ -20,7 +20,8 @@
     "php": ">=7.4",
     "fakerphp/faker": "^1.21.0",
     "symfony/console": "^4.4",
-    "mbezhanov/faker-provider-collection": "^2.0"
+    "mbezhanov/faker-provider-collection": "^2.0",
+    "bluemmb/faker-picsum-photos-provider": "^2.0"
   },
   "require-dev": {
     "prestashop/php-dev-tools": "^4.3"
