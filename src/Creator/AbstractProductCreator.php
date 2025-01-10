@@ -85,13 +85,13 @@ abstract class AbstractProductCreator
         }
     }
 
-    protected function associateStockMovements(int $productId, int $numberOfStockMovements): void
+    protected function associateStockMovements(int $productId, array $combinationsId, int $numberOfStockMovements): void
     {
         if ($numberOfStockMovements <= 0) {
             return;
         }
 
-        $this->stockMovementCreator->generate($numberOfStockMovements, $productId);
+        $this->stockMovementCreator->generate($numberOfStockMovements, $productId, $combinationsId);
     }
 
     protected function associateImages(int $productId, array $combinationsId, int $numberOfImages): void

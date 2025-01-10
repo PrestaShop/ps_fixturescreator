@@ -54,6 +54,7 @@ class ProductCombinationCreator extends AbstractProductCreator
         int $numberOfFeatures,
         int $numberOfFeatureValues,
         int $numberOfImages,
+        int $numberOfStockMovements,
         int $shopId
     ): void {
         $attributeGroups = $this->getAttributeGroupWithAtLeast($attributeValuePerGroupNumber);
@@ -107,6 +108,7 @@ class ProductCombinationCreator extends AbstractProductCreator
             }, $combinationsIds);
 
             $this->associateImages($newProductId->getValue(), $combinationsIds, $numberOfImages);
+            $this->associateStockMovements($newProductId->getValue(), $combinationsIds, $numberOfStockMovements);
             $this->associateFeatures($newProductId->getValue(), $numberOfFeatures, $numberOfFeatureValues, $shopId);
         }
     }

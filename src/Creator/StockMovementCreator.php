@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace PrestaShop\Module\PsFixturesCreator\Creator;
 
 use DateTime;
@@ -25,26 +27,28 @@ class StockMovementCreator
         $this->employee = new Employee(1);
     }
 
-    public function generate(int $number, int $productId): void
+    public function generate(int $number, int $productId, array $combinationsId = []): void
     {
-        // Start
-        $qtyProduct = 500;
+        foreach ($combinationsId as $combinationId) {
+            // Start
+            $qtyProduct = 500;
 
-        StockAvailable::setQuantity($productId, 0, $qtyProduct, null, false);
+            StockAvailable::setQuantity($productId, $combinationId, $qtyProduct, null, false);
 
-        for ($i = 0; $i < $number; ++$i) {
-            $deltaQuantity = rand(-10, 10);
+            for ($i = 0; $i < $number; ++$i) {
+                $deltaQuantity = rand(-10, 10);
 
-            $qtyProduct += $deltaQuantity;
-            $this->createStockMovement($productId, $deltaQuantity);
+                $qtyProduct += $deltaQuantity;
+                $this->createStockMovement($productId, $combinationId, $deltaQuantity);
+            }
+
+            StockAvailable::setQuantity($productId, $combinationId, $qtyProduct, null, false);
         }
-
-        StockAvailable::setQuantity($productId, 0, $qtyProduct, null, false);
     }
 
-    public function createStockMovement(int $productId, int $deltaQuantity): void
+    public function createStockMovement(int $productId, ?int $combinationId, int $deltaQuantity): void
     {
-        $stockAvailable = $this->stockManager->getStockAvailableByProduct(new Product($productId));
+        $stockAvailable = $this->stockManager->getStockAvailableByProduct(new Product($productId), $combinationId);
 
         $stockMvt = new StockMvt();
         $stockMvt->setIdStock((int) $stockAvailable->id);

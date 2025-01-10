@@ -108,6 +108,7 @@ class ProductCreatorCommand extends Command
                 $numberOfFeatures,
                 $numberOfFeatureValues,
                 $numberOfImages,
+                $numberOfStockMovements,
                 $shopId
             );
             $output->writeln(sprintf('%s product(s) with combinations created', $productsWithCombinations));
