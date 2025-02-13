@@ -30,7 +30,7 @@ Here is how to do the previous steps all in CLI, from the shop root folder:
 
 ```
 cd modules/
-git clone git@github.com:PrestaShop/ps_fixturescreator.git .
+git clone git@github.com:PrestaShop/ps_fixturescreator.git 
 cd ps_fixturescreator/
 composer install
 cd ../..
