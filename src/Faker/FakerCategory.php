@@ -81,7 +81,7 @@ class FakerCategory
      */
     private array $localizedGenerators;
 
-    public static function getCategory(string $category = null): self
+    public static function getCategory(?string $category = null): self
     {
         // Choose a random category
         if (null === $category) {
