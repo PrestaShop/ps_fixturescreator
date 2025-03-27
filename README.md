@@ -40,9 +40,46 @@ php bin/console cache:clear
 
 ## Usage
 
-A new Command should be available when you run `php bin/console`:
+New commands should be available when you run `php bin/console`:
+
 ```
 php bin/console prestashop:shop-creator
+
+Options:
+      --orders[=ORDERS]                    Number of orders to create [default: 0]
+      --customers[=CUSTOMERS]              Number of customers without order to create [default: 0]
+      --carts[=CARTS]                      Number of carts to create [default: 0]
+      --cart-rules[=CART-RULES]            Number of cart rules to create [default: 0]
+      --shopId[=SHOPID]                    The shop identifier [default: 1]
+      --shopGroupId[=SHOPGROUPID]          The shop group identifier [default: 1]
+      --languageId[=LANGUAGEID]            The languageId identifier [default: 1]
+      --attributeGroups[=ATTRIBUTEGROUPS]  Number of attribute groups [default: 0]
+      --attributes[=ATTRIBUTES]            Number of attributes per attribute group [default: 10]
+      --features[=FEATURES]                Number of features [default: 0]
+      --featureValues[=FEATUREVALUES]      Number of values per feature [default: 10]
+      --threads[=THREADS]                  Number of threads to create [default: 0]
 ```
 
-Running this command will load the data. Please check options with `-h` flag to see available parameters.
+```
+php bin/console prestashop:shop-creator
+
+Options:
+      --products[=PRODUCTS]                                  Number of products to create [default: 0]
+      --productsWithCombinations[=PRODUCTSWITHCOMBINATIONS]  Number of products with combinations to create [default: 0]
+      --shopId[=SHOPID]                                      The shop identifier [default: 1]
+      --shopGroupId[=SHOPGROUPID]                            The shop group identifier [default: 1]
+      --attributeGroups[=ATTRIBUTEGROUPS]                    Number of attribute groups per product [default: 2]
+      --attributes[=ATTRIBUTES]                              Number of attributes per attribute group [default: 5]
+      --features[=FEATURES]                                  Number of features per product [default: 2]
+      --featureValues[=FEATUREVALUES]                        Number of values per feature [default: 5]
+      --stockMovements[=STOCKMOVEMENTS]                      Number of stock movements per product [default: 0]
+      --images[=IMAGES]                                      Number of images per product [default: 0]
+```
+
+```
+php bin/console prestashop:customer-thread
+
+Options:
+      --threads[=THREADS]  Number of threads to create [default: 0]
+      --shopId[=SHOPID]    The shop identifier [default: 1]
+```
