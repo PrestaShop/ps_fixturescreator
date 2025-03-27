@@ -28,6 +28,7 @@ namespace PrestaShop\Module\PsFixturesCreator\Command;
 
 use PrestaShop\Module\PsFixturesCreator\Creator\ProductCombinationCreator;
 use PrestaShop\Module\PsFixturesCreator\Creator\ProductCreator;
+use PrestaShop\PrestaShop\Adapter\LegacyContextLoader;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -42,14 +43,18 @@ class ProductCreatorCommand extends Command
 
     private ProductCombinationCreator $productCombinationCreator;
 
+    private LegacyContextLoader $legacyContextLoader;
+
     public function __construct(
         ProductCreator $productCreator,
-        ProductCombinationCreator $productCombinationCreator
+        ProductCombinationCreator $productCombinationCreator,
+        LegacyContextLoader $legacyContextLoader
     ) {
         parent::__construct(null);
 
         $this->productCreator = $productCreator;
         $this->productCombinationCreator = $productCombinationCreator;
+        $this->legacyContextLoader = $legacyContextLoader;
     }
 
     /**
@@ -74,7 +79,11 @@ class ProductCreatorCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        \Context::getContext()->currency = \Currency::getDefaultCurrency();
+        $this->legacyContextLoader->loadGenericContext(
+            null,
+            \Currency::getDefaultCurrency()->id,
+            1
+        );
 
         $numberOfProducts = (int) $input->getOption('products');
         $shopId = (int) $input->getOption('shopId');
