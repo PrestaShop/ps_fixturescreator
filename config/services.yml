@@ -70,6 +70,7 @@ services:
           $attributeCreator: '@PrestaShop\Module\PsFixturesCreator\Creator\AttributeCreator'
           $featureCreator: '@PrestaShop\Module\PsFixturesCreator\Creator\FeatureCreator'
           $customerThreadCreator: '@PrestaShop\Module\PsFixturesCreator\Creator\CustomerThreadCreator'
+          $legacyContextLoader: '@prestashop.adapter.legacy_context_loader'
         tags:
             - { name: 'console.command' }
 
@@ -83,6 +84,7 @@ services:
       arguments:
         $productCreator: '@PrestaShop\Module\PsFixturesCreator\Creator\ProductCreator'
         $productCombinationCreator: '@PrestaShop\Module\PsFixturesCreator\Creator\ProductCombinationCreator'
+        $legacyContextLoader: '@prestashop.adapter.legacy_context_loader'
       tags:
         - { name: 'console.command' }
 
@@ -92,7 +94,7 @@ services:
       arguments:
         $dbPrefix: '%database_prefix%'
         $langRepository: '@prestashop.core.admin.lang.repository'
-    
+
     PrestaShop\Module\PsFixturesCreator\Command\CustomerThreadCreatorCommand:
       class: PrestaShop\Module\PsFixturesCreator\Command\CustomerThreadCreatorCommand
       autowire: true

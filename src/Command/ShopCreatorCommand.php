@@ -34,6 +34,7 @@ use PrestaShop\Module\PsFixturesCreator\Creator\CustomerCreator;
 use PrestaShop\Module\PsFixturesCreator\Creator\CustomerThreadCreator;
 use PrestaShop\Module\PsFixturesCreator\Creator\FeatureCreator;
 use PrestaShop\Module\PsFixturesCreator\Creator\OrderCreator;
+use PrestaShop\PrestaShop\Adapter\LegacyContextLoader;
 use Shop;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -59,6 +60,8 @@ class ShopCreatorCommand extends Command
 
     private CustomerThreadCreator $customerThreadCreator;
 
+    private LegacyContextLoader $legacyContextLoader;
+
     public function __construct(
         CustomerCreator $customerCreator,
         CartCreator $cartCreator,
@@ -66,7 +69,8 @@ class ShopCreatorCommand extends Command
         CartRuleCreator $cartRuleCreator,
         AttributeCreator $attributeCreator,
         FeatureCreator $featureCreator,
-        CustomerThreadCreator $customerThreadCreator
+        CustomerThreadCreator $customerThreadCreator,
+        LegacyContextLoader $legacyContextLoader
     ) {
         parent::__construct(null);
 
@@ -77,6 +81,7 @@ class ShopCreatorCommand extends Command
         $this->attributeCreator = $attributeCreator;
         $this->featureCreator = $featureCreator;
         $this->customerThreadCreator = $customerThreadCreator;
+        $this->legacyContextLoader = $legacyContextLoader;
     }
 
     /**
@@ -103,7 +108,11 @@ class ShopCreatorCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        \Context::getContext()->currency = \Currency::getDefaultCurrency();
+        $this->legacyContextLoader->loadGenericContext(
+            null,
+            \Currency::getDefaultCurrency()->id,
+            1
+        );
 
         $numberOfOrders = (int) $input->getOption('orders');
         $numberOfCustomerWithoutOrder = (int) $input->getOption('customers');
