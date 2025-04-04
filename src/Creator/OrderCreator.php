@@ -4,7 +4,9 @@ namespace PrestaShop\Module\PsFixturesCreator\Creator;
 
 use Address;
 use Cart;
+use Context;
 use Customer;
+use Employee;
 use Faker\Generator as Faker;
 use Order;
 use OrderState;
@@ -25,6 +27,12 @@ class OrderCreator
         $this->faker = $faker;
         $this->cartCreator = $cartCreator;
         $this->customerCreator = $customerCreator;
+
+        // Because we could be in CLI mode, there might be no employee in context, so we must set it manually
+        $context = Context::getContext();
+        if (!isset($context->employee) || !isset($context->employee->id)) {
+            $context->employee = new Employee(1);
+        }
     }
 
     public function generate(int $number, int $idShopGroup, int $idShop, array $productIds): void
