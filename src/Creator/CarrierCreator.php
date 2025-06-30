@@ -6,10 +6,12 @@ namespace PrestaShop\Module\PsFixturesCreator\Creator;
 
 use Carrier;
 use Faker\Generator as Faker;
+use Zone;
+use Group;
 
 class CarrierCreator
 {
-    private Faker $faker;
+    protected Faker $faker;
 
     public function __construct(Faker $faker)
     {
@@ -35,7 +37,7 @@ class CarrierCreator
         $carrier->is_module = false;
         $carrier->shipping_external = false;
         $carrier->range_behavior = 0;
-        $carrier->is_free = (bool) $this->faker->boolean(20); // 20% chance of being free
+        $carrier->is_free = (bool) $this->faker->boolean(20);
         $carrier->shipping_handling = (bool) $this->faker->boolean(50);
         $carrier->range_by_price = true;
         $carrier->range_by_weight = true;
@@ -47,7 +49,6 @@ class CarrierCreator
         $carrier->max_weight = 0;
         $carrier->position = 0;
 
-        // Multilingual fields
         $delay = [];
         foreach (\Language::getLanguages(false) as $lang) {
             $delay[$lang['id_lang']] = $this->faker->sentence(3, false);
@@ -56,14 +57,29 @@ class CarrierCreator
 
         $carrier->add();
 
-        // Add zones (example: Europe zone)
-        $carrier->addZone(1);
+        $zones = Zone::getZones(true);
+        $zoneIds = [];
+        if (!empty($zones)) {
+            foreach ($zones as $zone) {
+                $zoneIds[] = (int) $zone['id_zone'];
+            }
+        } else {
+            $zoneIds = [1];
+        }
+        $carrier->setZones($zoneIds);
 
-        // Add groups (example: customer group)
-        $carrier->addGroup(1);
+        $groups = Group::getGroups(true);
+        $groupIds = [];
+        if (!empty($groups)) {
+            foreach ($groups as $group) {
+                $groupIds[] = (int) $group['id_group'];
+            }
+        } else {
+            $groupIds = [1];
+        }
+        $carrier->setGroups($groupIds);
 
-        // Add shops
-        $carrier->addShop(\Context::getContext()->shop->id);
+        $carrier->update();
 
         return $carrier;
     }
