@@ -55,6 +55,6 @@ class CarrierCreatorCommand extends Command
             $output->writeln('No carriers to create. Use --carriers option to specify the number of carriers.');
         }
 
-        return Command::SUCCESS;
+        return 0;
     }
 }
