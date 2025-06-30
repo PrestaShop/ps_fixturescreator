@@ -101,3 +101,15 @@ services:
       autoconfigure: true
       tags:
         - { name: 'console.command' }
+
+    PrestaShop\Module\PsFixturesCreator\Creator\CarrierCreator:
+      arguments:
+        $faker: '@Faker\Generator'
+
+      PrestaShop\Module\PsFixturesCreator\Command\CarrierCreatorCommand:
+        class: PrestaShop\Module\PsFixturesCreator\Command\CarrierCreatorCommand
+        arguments:
+          $carrierCreator: '@PrestaShop\Module\PsFixturesCreator\Creator\CarrierCreator'
+          $legacyContextLoader: '@prestashop.adapter.legacy_context_loader'
+        tags:
+          - { name: 'console.command' }
