@@ -58,10 +58,11 @@ Options:
       --features[=FEATURES]                Number of features [default: 0]
       --featureValues[=FEATUREVALUES]      Number of values per feature [default: 10]
       --threads[=THREADS]                  Number of threads to create [default: 0]
+      --carriers[=CARRIERS]                Number of carriers to create [default: 0]
 ```
 
 ```
-php bin/console prestashop:shop-creator
+php bin/console prestashop:product-creator
 
 Options:
       --products[=PRODUCTS]                                  Number of products to create [default: 0]
