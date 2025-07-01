@@ -73,7 +73,7 @@ class ShopCreatorCommand extends Command
         AttributeCreator $attributeCreator,
         FeatureCreator $featureCreator,
         CustomerThreadCreator $customerThreadCreator,
-        CarrierCreator $carrierCreator, // AJOUT
+        CarrierCreator $carrierCreator,
         LegacyContextLoader $legacyContextLoader
     ) {
         parent::__construct(null);
