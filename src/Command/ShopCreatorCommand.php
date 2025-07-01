@@ -61,7 +61,7 @@ class ShopCreatorCommand extends Command
 
     private CustomerThreadCreator $customerThreadCreator;
 
-    private CarrierCreator $carrierCreator; // AJOUT
+    private CarrierCreator $carrierCreator;
 
     private LegacyContextLoader $legacyContextLoader;
 
