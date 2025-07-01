@@ -108,7 +108,7 @@ class ShopCreatorCommand extends Command
             ->addOption('features', null, InputOption::VALUE_OPTIONAL, 'Number of features', 0)
             ->addOption('featureValues', null, InputOption::VALUE_OPTIONAL, 'Number of values per feature', 10)
             ->addOption('threads', null, InputOption::VALUE_OPTIONAL, 'Number of threads to create', 0)
-            ->addOption('carriers', null, InputOption::VALUE_OPTIONAL, 'Number of carriers to create', 0) // AJOUT
+            ->addOption('carriers', null, InputOption::VALUE_OPTIONAL, 'Number of carriers to create', 0)
         ;
     }
 
