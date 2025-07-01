@@ -85,7 +85,7 @@ class ShopCreatorCommand extends Command
         $this->attributeCreator = $attributeCreator;
         $this->featureCreator = $featureCreator;
         $this->customerThreadCreator = $customerThreadCreator;
-        $this->carrierCreator = $carrierCreator; // AJOUT
+        $this->carrierCreator = $carrierCreator;
         $this->legacyContextLoader = $legacyContextLoader;
     }
 
