@@ -1,115 +1,108 @@
 services:
-    Faker\Generator:
-      factory: ['PrestaShop\Module\PsFixturesCreator\Faker\FakerFactory', 'create']
-      arguments:
-        - 'en_EN'
+  Faker\Generator:
+    factory: ['PrestaShop\Module\PsFixturesCreator\Faker\FakerFactory', 'create']
+    arguments:
+      - 'en_EN'
 
-    PrestaShop\Module\PsFixturesCreator\Creator\CustomerCreator:
-      arguments:
-        $faker: '@Faker\Generator'
+  PrestaShop\Module\PsFixturesCreator\Creator\CustomerCreator:
+    arguments:
+      $faker: '@Faker\Generator'
 
-    PrestaShop\Module\PsFixturesCreator\Creator\CartCreator:
-      arguments:
-        $faker: '@Faker\Generator'
+  PrestaShop\Module\PsFixturesCreator\Creator\CartCreator:
+    arguments:
+      $faker: '@Faker\Generator'
 
-    PrestaShop\Module\PsFixturesCreator\Creator\CartRuleCreator:
-      arguments:
-        $faker: '@Faker\Generator'
+  PrestaShop\Module\PsFixturesCreator\Creator\CartRuleCreator:
+    arguments:
+      $faker: '@Faker\Generator'
 
-    PrestaShop\Module\PsFixturesCreator\Creator\ProductImageCreator:
-      arguments:
-        $faker: '@Faker\Generator'
-        $imageCopier : '@prestashop.adapter.import.image_copier'
+  PrestaShop\Module\PsFixturesCreator\Creator\ProductImageCreator:
+    arguments:
+      $faker: '@Faker\Generator'
+      $imageCopier : '@prestashop.adapter.import.image_copier'
 
-    PrestaShop\Module\PsFixturesCreator\Creator\ProductCreator:
-      arguments:
-        $langRepository: '@prestashop.core.admin.lang.repository'
-        $featureCreator: '@PrestaShop\Module\PsFixturesCreator\Creator\FeatureCreator'
-        $productImageCreator: '@PrestaShop\Module\PsFixturesCreator\Creator\ProductImageCreator'
-        $stockMovementCreator: '@PrestaShop\Module\PsFixturesCreator\Creator\StockMovementCreator'
-        $connection: '@doctrine.dbal.default_connection'
-        $dbPrefix: '%database_prefix%'
-        $faker: '@Faker\Generator'
+  PrestaShop\Module\PsFixturesCreator\Creator\ProductCreator:
+    arguments:
+      $langRepository: '@prestashop.core.admin.lang.repository'
+      $featureCreator: '@PrestaShop\Module\PsFixturesCreator\Creator\FeatureCreator'
+      $productImageCreator: '@PrestaShop\Module\PsFixturesCreator\Creator\ProductImageCreator'
+      $stockMovementCreator: '@PrestaShop\Module\PsFixturesCreator\Creator\StockMovementCreator'
+      $connection: '@doctrine.dbal.default_connection'
+      $dbPrefix: '%database_prefix%'
+      $faker: '@Faker\Generator'
 
-    PrestaShop\Module\PsFixturesCreator\Creator\OrderCreator:
-      arguments:
-        $faker: '@Faker\Generator'
-        $customerCreator: '@PrestaShop\Module\PsFixturesCreator\Creator\CustomerCreator'
-        $cartCreator: '@PrestaShop\Module\PsFixturesCreator\Creator\CartCreator'
+  PrestaShop\Module\PsFixturesCreator\Creator\OrderCreator:
+    arguments:
+      $faker: '@Faker\Generator'
+      $customerCreator: '@PrestaShop\Module\PsFixturesCreator\Creator\CustomerCreator'
+      $cartCreator: '@PrestaShop\Module\PsFixturesCreator\Creator\CartCreator'
 
-    PrestaShop\Module\PsFixturesCreator\Creator\AttributeCreator:
-      arguments:
-        $entityManager: '@doctrine.orm.entity_manager'
-        $langRepository: '@prestashop.core.admin.lang.repository'
-        $shopRepository: '@prestashop.core.admin.shop.repository'
+  PrestaShop\Module\PsFixturesCreator\Creator\AttributeCreator:
+    arguments:
+      $entityManager: '@doctrine.orm.entity_manager'
+      $langRepository: '@prestashop.core.admin.lang.repository'
+      $shopRepository: '@prestashop.core.admin.shop.repository'
 
-    PrestaShop\Module\PsFixturesCreator\Creator\FeatureCreator:
-      arguments:
-        $langRepository: '@prestashop.core.admin.lang.repository'
+  PrestaShop\Module\PsFixturesCreator\Creator\FeatureCreator:
+    arguments:
+      $langRepository: '@prestashop.core.admin.lang.repository'
 
-    PrestaShop\Module\PsFixturesCreator\Creator\ProductCombinationCreator:
-      arguments:
-        $entityManager: '@doctrine.orm.entity_manager'
-        $commandBus: '@prestashop.core.command_bus'
-        $attributeCreator: '@PrestaShop\Module\PsFixturesCreator\Creator\AttributeCreator'
-        $langRepository: '@prestashop.core.admin.lang.repository'
-        $featureCreator: '@PrestaShop\Module\PsFixturesCreator\Creator\FeatureCreator'
-        $productImageCreator: '@PrestaShop\Module\PsFixturesCreator\Creator\ProductImageCreator'
-        $stockMovementCreator: '@PrestaShop\Module\PsFixturesCreator\Creator\StockMovementCreator'
-        $connection: '@doctrine.dbal.default_connection'
-        $dbPrefix: '%database_prefix%'
-        $faker: '@Faker\Generator'
+  PrestaShop\Module\PsFixturesCreator\Creator\ProductCombinationCreator:
+    arguments:
+      $entityManager: '@doctrine.orm.entity_manager'
+      $commandBus: '@prestashop.core.command_bus'
+      $attributeCreator: '@PrestaShop\Module\PsFixturesCreator\Creator\AttributeCreator'
+      $langRepository: '@prestashop.core.admin.lang.repository'
+      $featureCreator: '@PrestaShop\Module\PsFixturesCreator\Creator\FeatureCreator'
+      $productImageCreator: '@PrestaShop\Module\PsFixturesCreator\Creator\ProductImageCreator'
+      $stockMovementCreator: '@PrestaShop\Module\PsFixturesCreator\Creator\StockMovementCreator'
+      $connection: '@doctrine.dbal.default_connection'
+      $dbPrefix: '%database_prefix%'
+      $faker: '@Faker\Generator'
 
-    PrestaShop\Module\PsFixturesCreator\Command\ShopCreatorCommand:
-        class: PrestaShop\Module\PsFixturesCreator\Command\ShopCreatorCommand
-        arguments:
-          $customerCreator: '@PrestaShop\Module\PsFixturesCreator\Creator\CustomerCreator'
-          $cartCreator: '@PrestaShop\Module\PsFixturesCreator\Creator\CartCreator'
-          $orderCreator: '@PrestaShop\Module\PsFixturesCreator\Creator\OrderCreator'
-          $cartRuleCreator: '@PrestaShop\Module\PsFixturesCreator\Creator\CartRuleCreator'
-          $attributeCreator: '@PrestaShop\Module\PsFixturesCreator\Creator\AttributeCreator'
-          $featureCreator: '@PrestaShop\Module\PsFixturesCreator\Creator\FeatureCreator'
-          $customerThreadCreator: '@PrestaShop\Module\PsFixturesCreator\Creator\CustomerThreadCreator'
-          $legacyContextLoader: '@prestashop.adapter.legacy_context_loader'
-        tags:
-            - { name: 'console.command' }
+  PrestaShop\Module\PsFixturesCreator\Command\ShopCreatorCommand:
+    class: PrestaShop\Module\PsFixturesCreator\Command\ShopCreatorCommand
+    arguments:
+      $customerCreator: '@PrestaShop\Module\PsFixturesCreator\Creator\CustomerCreator'
+      $cartCreator: '@PrestaShop\Module\PsFixturesCreator\Creator\CartCreator'
+      $orderCreator: '@PrestaShop\Module\PsFixturesCreator\Creator\OrderCreator'
+      $cartRuleCreator: '@PrestaShop\Module\PsFixturesCreator\Creator\CartRuleCreator'
+      $attributeCreator: '@PrestaShop\Module\PsFixturesCreator\Creator\AttributeCreator'
+      $featureCreator: '@PrestaShop\Module\PsFixturesCreator\Creator\FeatureCreator'
+      $customerThreadCreator: '@PrestaShop\Module\PsFixturesCreator\Creator\CustomerThreadCreator'
+      $carrierCreator: '@PrestaShop\Module\PsFixturesCreator\Creator\CarrierCreator'
+      $legacyContextLoader: '@prestashop.adapter.legacy_context_loader'
+    tags:
+      - { name: 'console.command' }
 
-    PrestaShop\Module\PsFixturesCreator\Creator\StockMovementCreator:
-      arguments:
-        $stockManager: '@prestashop.adapter.stock_manager'
-        $stockMvtRepository: '@prestashop.core.api.stock_movement.repository'
+  PrestaShop\Module\PsFixturesCreator\Creator\StockMovementCreator:
+    arguments:
+      $stockManager: '@prestashop.adapter.stock_manager'
+      $stockMvtRepository: '@prestashop.core.api.stock_movement.repository'
 
-    PrestaShop\Module\PsFixturesCreator\Command\ProductCreatorCommand:
-      class: PrestaShop\Module\PsFixturesCreator\Command\ProductCreatorCommand
-      arguments:
-        $productCreator: '@PrestaShop\Module\PsFixturesCreator\Creator\ProductCreator'
-        $productCombinationCreator: '@PrestaShop\Module\PsFixturesCreator\Creator\ProductCombinationCreator'
-        $legacyContextLoader: '@prestashop.adapter.legacy_context_loader'
-      tags:
-        - { name: 'console.command' }
+  PrestaShop\Module\PsFixturesCreator\Command\ProductCreatorCommand:
+    class: PrestaShop\Module\PsFixturesCreator\Command\ProductCreatorCommand
+    arguments:
+      $productCreator: '@PrestaShop\Module\PsFixturesCreator\Creator\ProductCreator'
+      $productCombinationCreator: '@PrestaShop\Module\PsFixturesCreator\Creator\ProductCombinationCreator'
+      $legacyContextLoader: '@prestashop.adapter.legacy_context_loader'
+    tags:
+      - { name: 'console.command' }
 
-    PrestaShop\Module\PsFixturesCreator\Creator\CustomerThreadCreator:
-      autowire: true
-      autoconfigure: true
-      arguments:
-        $dbPrefix: '%database_prefix%'
-        $langRepository: '@prestashop.core.admin.lang.repository'
+  PrestaShop\Module\PsFixturesCreator\Creator\CustomerThreadCreator:
+    autowire: true
+    autoconfigure: true
+    arguments:
+      $dbPrefix: '%database_prefix%'
+      $langRepository: '@prestashop.core.admin.lang.repository'
 
-    PrestaShop\Module\PsFixturesCreator\Command\CustomerThreadCreatorCommand:
-      class: PrestaShop\Module\PsFixturesCreator\Command\CustomerThreadCreatorCommand
-      autowire: true
-      autoconfigure: true
-      tags:
-        - { name: 'console.command' }
+  PrestaShop\Module\PsFixturesCreator\Command\CustomerThreadCreatorCommand:
+    class: PrestaShop\Module\PsFixturesCreator\Command\CustomerThreadCreatorCommand
+    autowire: true
+    autoconfigure: true
+    tags:
+      - { name: 'console.command' }
 
-    PrestaShop\Module\PsFixturesCreator\Creator\CarrierCreator:
-      arguments:
-        $faker: '@Faker\Generator'
-
-    PrestaShop\Module\PsFixturesCreator\Command\CarrierCreatorCommand:
-      class: PrestaShop\Module\PsFixturesCreator\Command\CarrierCreatorCommand
-      arguments:
-        $carrierCreator: '@PrestaShop\Module\PsFixturesCreator\Creator\CarrierCreator'
-        $legacyContextLoader: '@prestashop.adapter.legacy_context_loader'
-      tags:
-        - { name: 'console.command' }
+  PrestaShop\Module\PsFixturesCreator\Creator\CarrierCreator:
+    arguments:
+      $faker: '@Faker\Generator'
