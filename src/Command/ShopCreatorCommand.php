@@ -132,7 +132,7 @@ class ShopCreatorCommand extends Command
         $numberOfFeatures = (int) $input->getOption('features');
         $numberOfFeatureValues = (int) $input->getOption('featureValues');
         $numberOfThreads = (int) $input->getOption('threads');
-        $numberOfCarriers = (int) $input->getOption('carriers'); // AJOUT
+        $numberOfCarriers = (int) $input->getOption('carriers');
 
         $productIds = $this->getStandardProducts($idLang);
 
