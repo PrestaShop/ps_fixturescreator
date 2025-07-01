@@ -34,7 +34,7 @@ use PrestaShop\Module\PsFixturesCreator\Creator\CustomerCreator;
 use PrestaShop\Module\PsFixturesCreator\Creator\CustomerThreadCreator;
 use PrestaShop\Module\PsFixturesCreator\Creator\FeatureCreator;
 use PrestaShop\Module\PsFixturesCreator\Creator\OrderCreator;
-use PrestaShop\Module\PsFixturesCreator\Creator\CarrierCreator; // AJOUT
+use PrestaShop\Module\PsFixturesCreator\Creator\CarrierCreator;
 use PrestaShop\PrestaShop\Adapter\LegacyContextLoader;
 use Shop;
 use Symfony\Component\Console\Command\Command;
