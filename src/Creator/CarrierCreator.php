@@ -5,13 +5,22 @@ declare(strict_types=1);
 namespace PrestaShop\Module\PsFixturesCreator\Creator;
 
 use Carrier;
-use Db; // Added for direct database operations
+use Db;
 use Faker\Generator as Faker;
 use Group;
+use RangePrice;
+use RangeWeight;
 use Zone;
-use RangePrice; // Added for price ranges
-use RangeWeight; // Added for weight ranges
 
+/**
+ * Class CarrierCreator
+ * @property bool $range_by_price
+ * @property bool $range_by_weight
+ * @property array $delay
+ * @property bool $range_behavior
+ * @property bool $is_free
+ * @property bool $shipping_handling
+ */
 class CarrierCreator
 {
     protected Faker $faker;
@@ -39,7 +48,7 @@ class CarrierCreator
         $carrier->deleted = false;
         $carrier->is_module = false;
         $carrier->shipping_external = false;
-        $carrier->range_behavior = 0; // 0 for cheapest, 1 for highest
+        $carrier->range_behavior = false;
         $carrier->is_free = (bool) $this->faker->boolean(20);
         $carrier->shipping_handling = (bool) $this->faker->boolean(50);
         $carrier->range_by_price = true;

@@ -28,13 +28,13 @@ namespace PrestaShop\Module\PsFixturesCreator\Command;
 
 use Db;
 use PrestaShop\Module\PsFixturesCreator\Creator\AttributeCreator;
+use PrestaShop\Module\PsFixturesCreator\Creator\CarrierCreator;
 use PrestaShop\Module\PsFixturesCreator\Creator\CartCreator;
 use PrestaShop\Module\PsFixturesCreator\Creator\CartRuleCreator;
 use PrestaShop\Module\PsFixturesCreator\Creator\CustomerCreator;
 use PrestaShop\Module\PsFixturesCreator\Creator\CustomerThreadCreator;
 use PrestaShop\Module\PsFixturesCreator\Creator\FeatureCreator;
 use PrestaShop\Module\PsFixturesCreator\Creator\OrderCreator;
-use PrestaShop\Module\PsFixturesCreator\Creator\CarrierCreator;
 use PrestaShop\PrestaShop\Adapter\LegacyContextLoader;
 use Shop;
 use Symfony\Component\Console\Command\Command;
