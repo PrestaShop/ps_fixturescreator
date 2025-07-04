@@ -15,12 +15,6 @@ use Zone;
 /**
  * Class CarrierCreator
  *
- * @property bool $range_by_price
- * @property bool $range_by_weight
- * @property array $delay
- * @property bool $range_behavior
- * @property bool $is_free
- * @property bool $shipping_handling
  */
 class CarrierCreator
 {
@@ -52,7 +46,9 @@ class CarrierCreator
         $carrier->range_behavior = false;
         $carrier->is_free = (bool) $this->faker->boolean(20);
         $carrier->shipping_handling = (bool) $this->faker->boolean(50);
+        /** @phpstan-ignore-next-line */
         $carrier->range_by_price = true;
+        /** @phpstan-ignore-next-line */
         $carrier->range_by_weight = true;
         $carrier->grade = $this->faker->numberBetween(0, 9);
         $carrier->url = 'http://www.example.com/tracking?id=@';
