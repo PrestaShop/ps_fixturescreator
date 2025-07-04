@@ -34,7 +34,7 @@ use PrestaShop\Module\PsFixturesCreator\Creator\CustomerCreator;
 use PrestaShop\Module\PsFixturesCreator\Creator\CustomerThreadCreator;
 use PrestaShop\Module\PsFixturesCreator\Creator\FeatureCreator;
 use PrestaShop\Module\PsFixturesCreator\Creator\OrderCreator;
-use PrestaShop\Module\PsFixturesCreator\Creator\CarrierCreator; // AJOUT
+use PrestaShop\Module\PsFixturesCreator\Creator\CarrierCreator;
 use PrestaShop\PrestaShop\Adapter\LegacyContextLoader;
 use Shop;
 use Symfony\Component\Console\Command\Command;
@@ -61,7 +61,7 @@ class ShopCreatorCommand extends Command
 
     private CustomerThreadCreator $customerThreadCreator;
 
-    private CarrierCreator $carrierCreator; // AJOUT
+    private CarrierCreator $carrierCreator;
 
     private LegacyContextLoader $legacyContextLoader;
 
@@ -73,7 +73,7 @@ class ShopCreatorCommand extends Command
         AttributeCreator $attributeCreator,
         FeatureCreator $featureCreator,
         CustomerThreadCreator $customerThreadCreator,
-        CarrierCreator $carrierCreator, // AJOUT
+        CarrierCreator $carrierCreator,
         LegacyContextLoader $legacyContextLoader
     ) {
         parent::__construct(null);
@@ -85,7 +85,7 @@ class ShopCreatorCommand extends Command
         $this->attributeCreator = $attributeCreator;
         $this->featureCreator = $featureCreator;
         $this->customerThreadCreator = $customerThreadCreator;
-        $this->carrierCreator = $carrierCreator; // AJOUT
+        $this->carrierCreator = $carrierCreator;
         $this->legacyContextLoader = $legacyContextLoader;
     }
 
@@ -108,7 +108,7 @@ class ShopCreatorCommand extends Command
             ->addOption('features', null, InputOption::VALUE_OPTIONAL, 'Number of features', 0)
             ->addOption('featureValues', null, InputOption::VALUE_OPTIONAL, 'Number of values per feature', 10)
             ->addOption('threads', null, InputOption::VALUE_OPTIONAL, 'Number of threads to create', 0)
-            ->addOption('carriers', null, InputOption::VALUE_OPTIONAL, 'Number of carriers to create', 0) // AJOUT
+            ->addOption('carriers', null, InputOption::VALUE_OPTIONAL, 'Number of carriers to create', 0)
         ;
     }
 
@@ -132,7 +132,7 @@ class ShopCreatorCommand extends Command
         $numberOfFeatures = (int) $input->getOption('features');
         $numberOfFeatureValues = (int) $input->getOption('featureValues');
         $numberOfThreads = (int) $input->getOption('threads');
-        $numberOfCarriers = (int) $input->getOption('carriers'); // AJOUT
+        $numberOfCarriers = (int) $input->getOption('carriers');
 
         $productIds = $this->getStandardProducts($idLang);
 
