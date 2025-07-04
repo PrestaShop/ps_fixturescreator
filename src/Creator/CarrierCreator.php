@@ -56,7 +56,7 @@ class CarrierCreator
         $carrier->max_depth = 0;
         $carrier->max_weight = 0;
         $carrier->position = 0;
-
+        /* @phpstan-ignore-next-line */
         $delay = [];
         foreach (\Language::getLanguages(false) as $lang) {
             $delay[$lang['id_lang']] = $this->faker->sentence(3, false);
