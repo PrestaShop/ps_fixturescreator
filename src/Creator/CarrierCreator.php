@@ -14,6 +14,7 @@ use Zone;
 
 /**
  * Class CarrierCreator
+ *
  * @property bool $range_by_price
  * @property bool $range_by_weight
  * @property array $delay
