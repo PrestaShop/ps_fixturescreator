@@ -1,103 +1,105 @@
 <?php
-/**
- * Copyright since 2007 PrestaShop SA and Contributors
- * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
- *
- * NOTICE OF LICENSE
- *
- * This source file is subject to the Open Software License (OSL 3.0)
- * that is bundled with this package in the file LICENSE.md.
- * It is also available through the world-wide-web at this URL:
- * https://opensource.org/licenses/OSL-3.0
- * If you did not receive a copy of the license and are unable to
- * obtain it through the world-wide-web, please send an email
- * to license@prestashop.com so we can send you a copy immediately.
- *
- * DISCLAIMER
- *
- * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
- * versions in the future. If you wish to customize PrestaShop for your
- * needs please refer to https://devdocs.prestashop.com/ for more information.
- *
- * @author    PrestaShop SA and Contributors <contact@prestashop.com>
- * @copyright Since 2007 PrestaShop SA and Contributors
- * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- */
 
 declare(strict_types=1);
 
 namespace PrestaShop\Module\PsFixturesCreator\Creator;
 
-use Doctrine\DBAL\Connection;
+use Customer;
+use CustomerMessage;
+use CustomerThread;
 use Faker\Generator as Faker;
 use PrestaShop\PrestaShop\Core\Language\LanguageRepositoryInterface;
 
 class CustomerThreadCreator
 {
+    private const STATUSES = ['open', 'open', 'open', 'closed', 'pending1', 'pending2'];
+
     protected LanguageRepositoryInterface $langRepository;
     protected Faker $faker;
-    protected string $dbPrefix;
-    protected Connection $connection;
+    protected EntityPicker $entityPicker;
+    protected DateSpreader $dateSpreader;
 
     public function __construct(
         LanguageRepositoryInterface $langRepository,
         Faker $faker,
-        Connection $connection,
-        string $dbPrefix
+        EntityPicker $entityPicker,
+        DateSpreader $dateSpreader
     ) {
         $this->langRepository = $langRepository;
         $this->faker = $faker;
-        $this->dbPrefix = $dbPrefix;
-        $this->connection = $connection;
+        $this->entityPicker = $entityPicker;
+        $this->dateSpreader = $dateSpreader;
     }
 
-    public function generate(int $threadsNumber, int $shopId): array
+    /**
+     * @return array{threads: int, messages: int}
+     */
+    public function generate(int $threadsNumber, int $shopId, int $messagesPerThread = 0, bool $linkToCustomers = true, int $spreadMonths = 12): array
     {
         $languages = $this->langRepository->findAll();
-        $generatedThreads = [];
+        $contactIds = $this->entityPicker->getContactIds();
+        $productIds = $this->entityPicker->getProductIds($shopId);
+        $customerIds = $linkToCustomers ? $this->entityPicker->getCustomerIds() : [];
+        $employeeIds = $this->entityPicker->getEmployeeIds();
 
-        $contactsCount = $this->getEntityCount('contact');
-        $productsCount = $this->getEntityCount('product');
+        $counters = ['threads' => 0, 'messages' => 0];
 
         for ($i = 0; $i < $threadsNumber; ++$i) {
-            $thread = new \CustomerThreadCore();
+            $customer = null;
+            $customerId = $this->entityPicker->pickOne($customerIds);
+            if (null !== $customerId) {
+                $customer = new Customer($customerId);
+            }
+
+            $thread = new CustomerThread();
             $thread->id_shop = $shopId;
-            $thread->id_lang = $languages[array_rand($languages)]->getId();
-            $thread->id_contact = $this->getRandomIdFromCount($contactsCount);
-            $thread->id_customer = 0;
+            $thread->id_lang = (int) $languages[array_rand($languages)]->getId();
+            $thread->id_contact = $this->entityPicker->pickOne($contactIds) ?? 0;
+            $thread->id_customer = $customer ? (int) $customer->id : 0;
             $thread->id_order = 0;
-            $thread->id_product = rand(0, 1) ? $this->getRandomIdFromCount($productsCount) : null;
-            $thread->email = $this->faker->email;
-            $thread->token = md5(uniqid());
-            $thread->status = 'open';
-            $thread->date_add = $this->faker->dateTimeBetween('2020-01-01', 'now')->format('Y-m-d H:i:s');
-            $thread->date_upd = date('Y-m-d H:i:s');
-
+            if ($customer && $this->faker->boolean(50)) {
+                $thread->id_order = $this->entityPicker->pickOne($this->entityPicker->getOrderIdsForCustomer((int) $customer->id)) ?? 0;
+            }
+            $thread->id_product = $this->faker->boolean(40) ? ($this->entityPicker->pickOne($productIds) ?? 0) : 0;
+            $thread->email = $customer ? $customer->email : $this->faker->safeEmail;
+            $thread->token = substr(md5(uniqid((string) mt_rand(), true)), 0, 12);
+            $thread->status = (string) $this->faker->randomElement(self::STATUSES);
+            $dateAdd = $this->dateSpreader->randomPastDate($spreadMonths);
+            $thread->date_add = $dateAdd;
+            $thread->date_upd = $dateAdd;
             $thread->add(false);
+            ++$counters['threads'];
 
-            $generatedThreads[] = $thread;
+            $counters['messages'] += $this->createMessages($thread, $messagesPerThread, $employeeIds, $dateAdd);
         }
 
-        return $generatedThreads;
+        return $counters;
     }
 
-    private function getEntityCount(string $tableName): int
+    /**
+     * @param int[] $employeeIds
+     */
+    private function createMessages(CustomerThread $thread, int $number, array $employeeIds, string $threadDate): int
     {
-        $count = $this->connection->createQueryBuilder()
-            ->select('COUNT(*) AS count')
-            ->from($this->dbPrefix . $tableName)
-            ->execute()
-            ->fetchOne();
+        $date = $threadDate;
+        for ($i = 0; $i < $number; ++$i) {
+            $fromEmployee = $i % 2 === 1;
 
-        return (int) $count;
-    }
+            $message = new CustomerMessage();
+            $message->id_customer_thread = (int) $thread->id;
+            $message->id_employee = $fromEmployee ? ($this->entityPicker->pickOne($employeeIds) ?? 1) : 0;
+            $message->message = implode("\n\n", $this->faker->paragraphs($this->faker->numberBetween(1, 3)));
+            $message->ip_address = (string) ip2long($this->faker->ipv4);
+            $message->user_agent = substr($this->faker->userAgent, 0, 255);
+            $message->private = $fromEmployee && $this->faker->boolean(20);
+            $message->read = $fromEmployee || $this->faker->boolean(70);
+            $message->date_add = $date;
+            $message->date_upd = $date;
+            $message->add(false);
 
-    private function getRandomIdFromCount(int $count): ?int
-    {
-        if ($count <= 0) {
-            return null;
+            $date = $this->dateSpreader->randomDateAfter($date, 48);
         }
 
-        return rand(1, $count);
+        return $number;
     }
 }

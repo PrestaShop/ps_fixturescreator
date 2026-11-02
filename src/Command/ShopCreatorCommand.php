@@ -26,24 +26,23 @@
 
 namespace PrestaShop\Module\PsFixturesCreator\Command;
 
-use Db;
 use PrestaShop\Module\PsFixturesCreator\Creator\AttributeCreator;
 use PrestaShop\Module\PsFixturesCreator\Creator\CarrierCreator;
 use PrestaShop\Module\PsFixturesCreator\Creator\CartCreator;
 use PrestaShop\Module\PsFixturesCreator\Creator\CartRuleCreator;
 use PrestaShop\Module\PsFixturesCreator\Creator\CustomerCreator;
 use PrestaShop\Module\PsFixturesCreator\Creator\CustomerThreadCreator;
+use PrestaShop\Module\PsFixturesCreator\Creator\EntityPicker;
 use PrestaShop\Module\PsFixturesCreator\Creator\FeatureCreator;
 use PrestaShop\Module\PsFixturesCreator\Creator\OrderCreator;
 use PrestaShop\PrestaShop\Adapter\LegacyContextLoader;
-use Shop;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
- * This command is used for appending the hook names in the configuration file.
+ * Legacy all-in-one command. Prefer prestashop:fixtures:generate / prestashop:fixtures:preset.
  */
 class ShopCreatorCommand extends Command
 {
@@ -63,6 +62,8 @@ class ShopCreatorCommand extends Command
 
     private CarrierCreator $carrierCreator;
 
+    private EntityPicker $entityPicker;
+
     private LegacyContextLoader $legacyContextLoader;
 
     public function __construct(
@@ -74,6 +75,7 @@ class ShopCreatorCommand extends Command
         FeatureCreator $featureCreator,
         CustomerThreadCreator $customerThreadCreator,
         CarrierCreator $carrierCreator,
+        EntityPicker $entityPicker,
         LegacyContextLoader $legacyContextLoader
     ) {
         parent::__construct(null);
@@ -86,6 +88,7 @@ class ShopCreatorCommand extends Command
         $this->featureCreator = $featureCreator;
         $this->customerThreadCreator = $customerThreadCreator;
         $this->carrierCreator = $carrierCreator;
+        $this->entityPicker = $entityPicker;
         $this->legacyContextLoader = $legacyContextLoader;
     }
 
@@ -134,7 +137,7 @@ class ShopCreatorCommand extends Command
         $numberOfThreads = (int) $input->getOption('threads');
         $numberOfCarriers = (int) $input->getOption('carriers');
 
-        $productIds = $this->getStandardProducts($idLang);
+        $productIds = $this->entityPicker->getOrderableProducts($idshop);
 
         // Create customers (without order)
         if (!empty($numberOfCustomerWithoutOrder)) {
@@ -163,7 +166,7 @@ class ShopCreatorCommand extends Command
         // Carts and orders are created last, so they can use new products randomly
         // Create carts
         if (!empty($numberOfCarts)) {
-            $this->cartCreator->generate($numberOfCarts, $productIds);
+            $this->cartCreator->generate($numberOfCarts, $productIds, false, 5, 0, $idshop);
             $output->writeln(sprintf('%s cart(s) created.', $numberOfCarts));
         }
 
@@ -186,23 +189,5 @@ class ShopCreatorCommand extends Command
         }
 
         return 0;
-    }
-
-    /**
-     * @param int $id_lang Language identifier
-     *
-     * @return bool|array
-     */
-    private function getStandardProducts($id_lang, bool $front = true)
-    {
-        $sql = 'SELECT p.`id_product`, pl.`name`
-                FROM `' . _DB_PREFIX_ . 'product` p
-                ' . Shop::addSqlAssociation('product', 'p') . '
-                LEFT JOIN `' . _DB_PREFIX_ . 'product_lang` pl ON (p.`id_product` = pl.`id_product` ' . Shop::addSqlRestrictionOnLang('pl') . ')
-                WHERE p.`product_type` = "standard" AND pl.`id_lang` = ' . (int) $id_lang . '
-                ' . ($front ? ' AND product_shop.`visibility` IN ("both", "catalog")' : '') . '
-                ORDER BY pl.`name`';
-
-        return Db::getInstance((bool) _PS_USE_SQL_SLAVE_)->executeS($sql);
     }
 }
