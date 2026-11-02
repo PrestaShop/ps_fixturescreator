@@ -18,6 +18,16 @@ services:
     arguments:
       $faker: '@Faker\Generator'
 
+  PrestaShop\Module\PsFixturesCreator\Statistics\RunLogger:
+    arguments:
+      $connection: '@doctrine.dbal.default_connection'
+      $dbPrefix: '%database_prefix%'
+
+  PrestaShop\Module\PsFixturesCreator\Statistics\StatisticsProvider:
+    arguments:
+      $connection: '@doctrine.dbal.default_connection'
+      $dbPrefix: '%database_prefix%'
+
   # ---------------------------------------------------------------- Creators (low level builders)
 
   PrestaShop\Module\PsFixturesCreator\Creator\SpecificPriceCreator:
@@ -125,7 +135,86 @@ services:
       $dateSpreader: '@PrestaShop\Module\PsFixturesCreator\Creator\DateSpreader'
 
   # ---------------------------------------------------------------- Generators (one per data type)
+
+  PrestaShop\Module\PsFixturesCreator\Generator\AttributeGenerator:
+    autowire: true
+    tags: ['ps_fixturescreator.generator']
+
+  PrestaShop\Module\PsFixturesCreator\Generator\FeatureGenerator:
+    autowire: true
+    tags: ['ps_fixturescreator.generator']
+
+  PrestaShop\Module\PsFixturesCreator\Generator\ProductGenerator:
+    autowire: true
+    tags: ['ps_fixturescreator.generator']
+
+  PrestaShop\Module\PsFixturesCreator\Generator\ProductWithCombinationsGenerator:
+    autowire: true
+    tags: ['ps_fixturescreator.generator']
+
+  PrestaShop\Module\PsFixturesCreator\Generator\SpecificPriceGenerator:
+    autowire: true
+    tags: ['ps_fixturescreator.generator']
+
+  PrestaShop\Module\PsFixturesCreator\Generator\TagGenerator:
+    autowire: true
+    tags: ['ps_fixturescreator.generator']
+
+  PrestaShop\Module\PsFixturesCreator\Generator\CustomerGenerator:
+    autowire: true
+    tags: ['ps_fixturescreator.generator']
+
+  PrestaShop\Module\PsFixturesCreator\Generator\CarrierGenerator:
+    autowire: true
+    tags: ['ps_fixturescreator.generator']
+
+  PrestaShop\Module\PsFixturesCreator\Generator\CartRuleGenerator:
+    autowire: true
+    tags: ['ps_fixturescreator.generator']
+
+  PrestaShop\Module\PsFixturesCreator\Generator\CartGenerator:
+    autowire: true
+    tags: ['ps_fixturescreator.generator']
+
+  PrestaShop\Module\PsFixturesCreator\Generator\OrderGenerator:
+    autowire: true
+    tags: ['ps_fixturescreator.generator']
+
+  PrestaShop\Module\PsFixturesCreator\Generator\CustomerThreadGenerator:
+    autowire: true
+    tags: ['ps_fixturescreator.generator']
+
+  PrestaShop\Module\PsFixturesCreator\Generator\GeneratorRegistry:
+    arguments:
+      $generators: !tagged_iterator ps_fixturescreator.generator
+
+  PrestaShop\Module\PsFixturesCreator\Generator\LegacyContextPreparer:
+    arguments:
+      $legacyContextLoader: '@prestashop.adapter.legacy_context_loader'
+
+  PrestaShop\Module\PsFixturesCreator\Generator\GenerationRunner:
+    arguments:
+      $registry: '@PrestaShop\Module\PsFixturesCreator\Generator\GeneratorRegistry'
+      $runLogger: '@PrestaShop\Module\PsFixturesCreator\Statistics\RunLogger'
+      $contextPreparer: '@PrestaShop\Module\PsFixturesCreator\Generator\LegacyContextPreparer'
+
   # ---------------------------------------------------------------- Console commands
+
+  PrestaShop\Module\PsFixturesCreator\Command\GenerateCommand:
+    autowire: true
+    tags:
+      - { name: 'console.command' }
+
+  PrestaShop\Module\PsFixturesCreator\Command\ListGeneratorsCommand:
+    autowire: true
+    tags:
+      - { name: 'console.command' }
+
+  PrestaShop\Module\PsFixturesCreator\Command\StatsCommand:
+    autowire: true
+    tags:
+      - { name: 'console.command' }
+
   # Legacy commands, kept for backward compatibility
 
   PrestaShop\Module\PsFixturesCreator\Command\ShopCreatorCommand:

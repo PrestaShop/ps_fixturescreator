@@ -1,5 +1,7 @@
 <?php
 
+use PrestaShop\Module\PsFixturesCreator\Statistics\RunLogger;
+
 if (!defined('_PS_VERSION_')) {
     exit;
 }
@@ -15,7 +17,7 @@ class ps_fixturescreator extends Module
     {
         $this->name = 'ps_fixturescreator';
         $this->tab = 'administration';
-        $this->version = '1.0.0';
+        $this->version = '1.1.0';
         $this->author = 'PrestaShop';
         $this->need_instance = 0;
         $this->ps_versions_compliancy = ['min' => '8.0.0', 'max' => _PS_VERSION_];
@@ -23,7 +25,29 @@ class ps_fixturescreator extends Module
 
         parent::__construct();
 
-        $this->displayName = $this->l('PS Fixtures Creator');
-        $this->description = $this->l('Module to create fixtures for PrestaShop');
+        $this->displayName = $this->trans('PS Fixtures Creator', [], 'Modules.Psfixturescreator.Admin');
+        $this->description = $this->trans('Generate large volumes of fake data (catalog, customers, orders...) to audit PrestaShop performance.', [], 'Modules.Psfixturescreator.Admin');
+    }
+
+    public function install(): bool
+    {
+        return parent::install()
+            && $this->installDatabase();
+    }
+
+    public function uninstall(): bool
+    {
+        return $this->uninstallDatabase()
+            && parent::uninstall();
+    }
+
+    public function installDatabase(): bool
+    {
+        return (bool) Db::getInstance()->execute(RunLogger::getCreateTableSql(_DB_PREFIX_, _MYSQL_ENGINE_));
+    }
+
+    public function uninstallDatabase(): bool
+    {
+        return (bool) Db::getInstance()->execute(RunLogger::getDropTableSql(_DB_PREFIX_));
     }
 }
