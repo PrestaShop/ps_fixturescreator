@@ -2,35 +2,29 @@
 
 ## About
 
-This module was desiged to load an heavy set of data into PrestaShop. Then you can use the SQL dump to easily "load" another shop with lot of data for performance testing.
+This module loads a **heavy, realistic set of fake data** into PrestaShop so you can audit its performance: product listings on 100k products, order pages on 50k orders, statistics on 200k visitors... Then dump the database and reuse the SQL in your CI or load tests.
 
 > [!NOTE]
-> This tool aims to replace [PrestaShop/prestashop-shop-creator](https://github.com/PrestaShop/prestashop-shop-creator) by using a different design. See below.
+> This tool replaces [PrestaShop/prestashop-shop-creator](https://github.com/PrestaShop/prestashop-shop-creator) with a different design: it calls PrestaShop's own ObjectModel / CQRS layer, so the generated rows are exactly what the application would have written itself.
+
+It provides:
+
+- **20 generators** covering the catalog (categories, brands, suppliers, attributes, features, products, combinations, images, specific prices, tags, stock movements), customers (customers, addresses, groups), sales (carts, orders with lines / carrier / status history / payments / invoices, cart rules, carriers), customer service (threads and messages), content (CMS, stores, employees) and traffic statistics (guests, connections, pages viewed, sources);
+- **console commands** for large volumes, with ready-made presets (small / medium / large shop).
 
 ## How this tool is designed and how to use it
 
-The previous tool, prestashop-shop-creator, became progressively unmaintainable. We believe this is because of
-- how it was designed in the beginning (with XML files at its core)
-- a PHP generation tool will always be slower than directly injecting raw SQL into database
-- generating 'smart' data (carts with real products and real customers and real adresses) is complex
+The previous tool, prestashop-shop-creator, became progressively unmaintainable because of its XML-based design and because generating "smart" data in PHP is slow and complex.
 
-This tool has then been created in a 'dummy' way on purpose: all it does is call `new` on ObjectModel plenty times to create the needed objects.
+This tool is deliberately **dumb**: each generator calls `new Product()`, `new Order()`... many times, using PrestaShop's own classes. Data is randomly linked together (products in random categories with random brands, orders of existing customers with existing carriers, threads about existing orders...), which is enough to exercise every join the application performs.
 
-**You should not use the generation action inside a CI or a performance test**. Instead, use the tool to load the shop with your fake data, then export the data as SQL files. Use these SQL files in your CI or performance tests: it will be predictible, fast, and controlled.
+**You should not run the generation inside a CI or a performance test**. Generate once, export the database as SQL, and load that dump in your tests: predictable, fast, controlled.
 
 ## Install
 
-### Install and configure module
-
-Install the module by using `git clone` to clone this repository inside `modules/` folder.
-
-### Bash steps
-
-Here is how to do the previous steps all in CLI, from the shop root folder:
-
 ```
 cd modules/
-git clone git@github.com:PrestaShop/ps_fixturescreator.git 
+git clone git@github.com:PrestaShop/ps_fixturescreator.git
 cd ps_fixturescreator/
 composer install
 cd ../..
@@ -38,49 +32,73 @@ php bin/console prestashop:module install ps_fixturescreator
 php bin/console cache:clear
 ```
 
-## Usage
+Requirements: PrestaShop 8.0+ (tested up to 9.x), PHP 7.4+. The GD extension is used to generate product images locally (otherwise images can be downloaded from picsum.photos).
 
-New commands should be available when you run `php bin/console`:
 
-```
-php bin/console prestashop:shop-creator
-
-Options:
-      --orders[=ORDERS]                    Number of orders to create [default: 0]
-      --customers[=CUSTOMERS]              Number of customers without order to create [default: 0]
-      --carts[=CARTS]                      Number of carts to create [default: 0]
-      --cart-rules[=CART-RULES]            Number of cart rules to create [default: 0]
-      --shopId[=SHOPID]                    The shop identifier [default: 1]
-      --shopGroupId[=SHOPGROUPID]          The shop group identifier [default: 1]
-      --languageId[=LANGUAGEID]            The languageId identifier [default: 1]
-      --attributeGroups[=ATTRIBUTEGROUPS]  Number of attribute groups [default: 0]
-      --attributes[=ATTRIBUTES]            Number of attributes per attribute group [default: 10]
-      --features[=FEATURES]                Number of features [default: 0]
-      --featureValues[=FEATUREVALUES]      Number of values per feature [default: 10]
-      --threads[=THREADS]                  Number of threads to create [default: 0]
-      --carriers[=CARRIERS]                Number of carriers to create [default: 0]
-```
+## Console
 
 ```
-php bin/console prestashop:product-creator
-
-Options:
-      --products[=PRODUCTS]                                  Number of products to create [default: 0]
-      --productsWithCombinations[=PRODUCTSWITHCOMBINATIONS]  Number of products with combinations to create [default: 0]
-      --shopId[=SHOPID]                                      The shop identifier [default: 1]
-      --shopGroupId[=SHOPGROUPID]                            The shop group identifier [default: 1]
-      --attributeGroups[=ATTRIBUTEGROUPS]                    Number of attribute groups per product [default: 2]
-      --attributes[=ATTRIBUTES]                              Number of attributes per attribute group [default: 5]
-      --features[=FEATURES]                                  Number of features per product [default: 2]
-      --featureValues[=FEATUREVALUES]                        Number of values per feature [default: 5]
-      --stockMovements[=STOCKMOVEMENTS]                      Number of stock movements per product [default: 0]
-      --images[=IMAGES]                                      Number of images per product [default: 0]
+php bin/console prestashop:fixtures:list                        # generators, options and presets
+php bin/console prestashop:fixtures:generate <generator> [options]
+php bin/console prestashop:fixtures:preset <small|medium|large> [--scale=0.5] [--skip=traffic]
+php bin/console prestashop:fixtures:stats [--json]              # same figures as the dashboard
 ```
 
-```
-php bin/console prestashop:customer-thread
+Examples:
 
-Options:
-      --threads[=THREADS]  Number of threads to create [default: 0]
-      --shopId[=SHOPID]    The shop identifier [default: 1]
 ```
+php bin/console prestashop:fixtures:generate categories --count=500 --option depth=4
+php bin/console prestashop:fixtures:generate products --count=20000 --batch=200 --option images=2 --option specific_prices=1
+php bin/console prestashop:fixtures:generate products_with_combinations --count=2000 --option attribute_groups=2 --option attributes=6
+php bin/console prestashop:fixtures:generate customers --count=10000 --option addresses_per_customer=2
+php bin/console prestashop:fixtures:generate orders --count=20000 --batch=100 --option spread_months=24
+php bin/console prestashop:fixtures:generate traffic --count=100000 --batch=1000
+php bin/console prestashop:fixtures:preset large --skip=traffic
+```
+
+Common options: `--shopId`, `--shopGroupId`, `--languageId`, `--batch` (split the run in batches, with a progress bar).
+
+### Generators
+
+| Group | Generator | Creates | Main options |
+| --- | --- | --- | --- |
+| Catalog | `categories` | random category tree under Home (nested set regenerated once) | `depth`, `parent` |
+| Catalog | `manufacturers` | brands | |
+| Catalog | `suppliers` | suppliers | |
+| Catalog | `attributes` | attribute groups with values | `values_per_group` |
+| Catalog | `features` | features with values | `values_per_feature` |
+| Catalog | `products` | standard products: descriptions, price, EAN, weight, tax rule, stock, random categories/brand/supplier, features, tags, specific prices, images | `categories_per_product`, `features`, `tags`, `specific_prices`, `images`, `image_source` (local/picsum), `stock_movements`, `quantity`, `spread_months` |
+| Catalog | `products_with_combinations` | same, declined in combinations with their own stock, price impacts and images | `attribute_groups`, `attributes` + the product options |
+| Catalog | `specific_prices` | discounts on random products (quantity, group, country, dates) | `type` (mixed/amount/percentage) |
+| Catalog | `tags` | tags on random products, every language | `tags_per_product` |
+| Customers | `customer_groups` | groups with reductions | |
+| Customers | `customers` | customers (password `prestashop`) with addresses and groups | `addresses_per_customer`, `random_group`, `spread_months` |
+| Sales | `carriers` | carriers for every zone/group with ranges | |
+| Sales | `cart_rules` | discount codes | |
+| Sales | `carts` | abandoned carts | `use_existing_customers`, `products_per_cart`, `spread_months` |
+| Sales | `orders` | complete orders: lines, carrier, status history, payment, invoice; stock decremented | `use_existing_customers`, `products_per_order`, `with_invoice`, `spread_months` |
+| Support | `customer_threads` | customer service threads with messages, linked to customers/orders/products | `messages_per_thread`, `link_to_customers` |
+| Content | `cms_pages` | CMS categories and pages | `cms_categories` |
+| Content | `stores` | physical stores | |
+| Content | `employees` | back office employees (password `prestashop_fixtures`) | |
+| Traffic | `traffic` | guests, connections, pages viewed, sources | `connections_per_guest`, `pages_per_connection`, `spread_months` |
+
+Generators pick existing data at random: generate categories, brands, attributes and features **before** products, and products and customers **before** carts, orders and threads. The presets already follow that order.
+
+### Presets
+
+| Preset | Volume |
+| --- | --- |
+| `small` | ~1k products, 500 customers, 500 orders, 1k visitors |
+| `medium` | ~10k products, 5k customers, 5k orders, 20k visitors |
+| `large` | ~100k products, 50k customers, 50k orders, 200k visitors |
+
+Use `--scale` to multiply every quantity (`--scale=0.1` for a dry run) and `--skip` to leave a generator out.
+
+### Legacy commands
+
+`prestashop:shop-creator`, `prestashop:product-creator` and `prestashop:customer-thread` are kept for backward compatibility and run the same creators.
+
+## Extending
+
+A generator is a service implementing `FixtureGeneratorInterface` (or extending `AbstractGenerator`) tagged `ps_fixturescreator.generator` in `config/services.yml`. It declares its options with `GeneratorOption::int|bool|choice()` and returns a `GenerationResult` with the counts of what it created. It is then automatically available in the CLI and in the run history.
