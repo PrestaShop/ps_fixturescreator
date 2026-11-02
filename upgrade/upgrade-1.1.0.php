@@ -5,11 +5,11 @@ if (!defined('_PS_VERSION_')) {
 }
 
 /**
- * 1.1.0: generation log table.
+ * 1.1.0: back office dashboard + generation log table.
  *
  * @param ps_fixturescreator $module
  */
 function upgrade_module_1_1_0($module): bool
 {
-    return $module->installDatabase();
+    return $module->installDatabase() && $module->installTab();
 }

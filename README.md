@@ -10,6 +10,7 @@ This module loads a **heavy, realistic set of fake data** into PrestaShop so you
 It provides:
 
 - **20 generators** covering the catalog (categories, brands, suppliers, attributes, features, products, combinations, images, specific prices, tags, stock movements), customers (customers, addresses, groups), sales (carts, orders with lines / carrier / status history / payments / invoices, cart rules, carriers), customer service (threads and messages), content (CMS, stores, employees) and traffic statistics (guests, connections, pages viewed, sources);
+- a **back office page** (Configure > Advanced Parameters > Fixtures Creator) with a **dashboard** of the current data volume (entity counts, biggest tables, orders per month, generation history) and a **form** to run the generators in batches from the browser;
 - **console commands** for large volumes, with ready-made presets (small / medium / large shop).
 
 ## How this tool is designed and how to use it
@@ -34,6 +35,13 @@ php bin/console cache:clear
 
 Requirements: PrestaShop 8.0+ (tested up to 9.x), PHP 7.4+. The GD extension is used to generate product images locally (otherwise images can be downloaded from picsum.photos).
 
+## Back office
+
+Open **Configure > Advanced Parameters > Fixtures Creator** (or click *Configure* on the module).
+
+**Dashboard tab**: counts of every entity type (products, combinations, categories, customers, addresses, carts, orders, order lines, invoices, threads, CMS pages, visitors, connections...), the biggest database tables with data/index sizes, orders per month, categories per depth, and the history of generation runs (from the UI and from the console).
+
+**Generate tab**: pick a target shop and language, enter a quantity on each generator you need (or apply a preset), open *Options* to tune them, then run them one by one or all together. Generation is executed in small HTTP batches whose size adapts to the server speed, so it is not limited by `max_execution_time`; a browser tab must stay open. The page also shows the equivalent console commands for the current selection, and offers post-generation tasks (search indexation, category tree regeneration).
 
 ## Console
 
@@ -83,7 +91,7 @@ Common options: `--shopId`, `--shopGroupId`, `--languageId`, `--batch` (split th
 | Content | `employees` | back office employees (password `prestashop_fixtures`) | |
 | Traffic | `traffic` | guests, connections, pages viewed, sources | `connections_per_guest`, `pages_per_connection`, `spread_months` |
 
-Generators pick existing data at random: generate categories, brands, attributes and features **before** products, and products and customers **before** carts, orders and threads. The presets already follow that order.
+Generators pick existing data at random: generate categories, brands, attributes and features **before** products, and products and customers **before** carts, orders and threads. The presets and the "Run selected generators" button already follow that order.
 
 ### Presets
 
@@ -101,4 +109,4 @@ Use `--scale` to multiply every quantity (`--scale=0.1` for a dry run) and `--sk
 
 ## Extending
 
-A generator is a service implementing `FixtureGeneratorInterface` (or extending `AbstractGenerator`) tagged `ps_fixturescreator.generator` in `config/services.yml`. It declares its options with `GeneratorOption::int|bool|choice()` and returns a `GenerationResult` with the counts of what it created. It is then automatically available in the CLI and in the run history.
+A generator is a service implementing `FixtureGeneratorInterface` (or extending `AbstractGenerator`) tagged `ps_fixturescreator.generator` in `config/services.yml`. It declares its options with `GeneratorOption::int|bool|choice()` and returns a `GenerationResult` with the counts of what it created. It is then automatically available in the CLI, in the back office form and in the dashboard history.

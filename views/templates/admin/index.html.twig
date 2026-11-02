@@ -1,0 +1,49 @@
+{#**
+ * PS Fixtures Creator - back office page (dashboard + generators).
+ * The whole UI is rendered client-side by views/js/admin.js from the JSON payload below,
+ * so the dashboard can be refreshed without reloading the page.
+ *#}
+{% extends '@PrestaShop/Admin/layout.html.twig' %}
+
+{% block stylesheets %}
+  {{ parent() }}
+  <link rel="stylesheet" href="{{ asset('../modules/ps_fixturescreator/views/css/admin.css') }}">
+{% endblock %}
+
+{% block content %}
+  <div id="psfc-app" class="psfc" data-loading="1">
+    <div class="psfc-header">
+      <ul class="nav nav-tabs psfc-tabs" role="tablist">
+        <li class="nav-item">
+          <a class="nav-link active" href="#psfc-dashboard" data-psfc-tab="dashboard" role="tab">
+            <i class="material-icons">insights</i> {{ 'Dashboard'|trans({}, 'Modules.Psfixturescreator.Admin') }}
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#psfc-generate" data-psfc-tab="generate" role="tab">
+            <i class="material-icons">add_box</i> {{ 'Generate'|trans({}, 'Modules.Psfixturescreator.Admin') }}
+          </a>
+        </li>
+      </ul>
+      <div class="psfc-header-actions">
+        <span class="psfc-env text-muted" id="psfc-env"></span>
+        <button type="button" class="btn btn-outline-secondary btn-sm" id="psfc-refresh">
+          <i class="material-icons">refresh</i> {{ 'Refresh figures'|trans({}, 'Modules.Psfixturescreator.Admin') }}
+        </button>
+      </div>
+    </div>
+
+    <section id="psfc-dashboard" class="psfc-panel is-active" role="tabpanel"></section>
+    <section id="psfc-generate" class="psfc-panel" role="tabpanel"></section>
+
+    <noscript>
+      <div class="alert alert-warning">{{ 'This page needs JavaScript. Use the console commands instead (php bin/console prestashop:fixtures:list).'|trans({}, 'Modules.Psfixturescreator.Admin') }}</div>
+    </noscript>
+  </div>
+  <script type="application/json" id="psfc-data">{{ pageData|json_encode(constant('JSON_HEX_TAG') b-or constant('JSON_HEX_AMP') b-or constant('JSON_HEX_APOS'))|raw }}</script>
+{% endblock %}
+
+{% block javascripts %}
+  {{ parent() }}
+  <script src="{{ asset('../modules/ps_fixturescreator/views/js/admin.js') }}"></script>
+{% endblock %}
