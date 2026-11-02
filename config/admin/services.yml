@@ -1,0 +1,8 @@
+services:
+  _defaults:
+    public: true
+
+  PrestaShop\Module\PsFixturesCreator\Controller\Admin\FixturesCreatorController:
+    autowire: true
+    autoconfigure: true
+    tags: ['controller.service_arguments']

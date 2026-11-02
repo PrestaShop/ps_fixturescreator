@@ -1,0 +1,28 @@
+ps_fixturescreator_index:
+  path: /ps_fixturescreator
+  methods: [GET]
+  defaults:
+    _controller: 'PrestaShop\Module\PsFixturesCreator\Controller\Admin\FixturesCreatorController::indexAction'
+    _legacy_controller: 'AdminPsFixturesCreator'
+    _legacy_link: 'AdminPsFixturesCreator'
+
+ps_fixturescreator_run:
+  path: /ps_fixturescreator/run
+  methods: [POST]
+  defaults:
+    _controller: 'PrestaShop\Module\PsFixturesCreator\Controller\Admin\FixturesCreatorController::runAction'
+    _legacy_controller: 'AdminPsFixturesCreator'
+
+ps_fixturescreator_stats:
+  path: /ps_fixturescreator/stats
+  methods: [GET]
+  defaults:
+    _controller: 'PrestaShop\Module\PsFixturesCreator\Controller\Admin\FixturesCreatorController::statsAction'
+    _legacy_controller: 'AdminPsFixturesCreator'
+
+ps_fixturescreator_maintenance:
+  path: /ps_fixturescreator/maintenance
+  methods: [POST]
+  defaults:
+    _controller: 'PrestaShop\Module\PsFixturesCreator\Controller\Admin\FixturesCreatorController::maintenanceAction'
+    _legacy_controller: 'AdminPsFixturesCreator'
