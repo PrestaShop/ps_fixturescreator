@@ -35,7 +35,7 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
- * This command is used for appending the hook names in the configuration file.
+ * Legacy product command. Prefer prestashop:fixtures:generate products / products_with_combinations.
  */
 class ProductCreatorCommand extends Command
 {
