@@ -26,7 +26,7 @@ class ps_fixturescreator extends Module
         parent::__construct();
 
         $this->displayName = $this->trans('PS Fixtures Creator', [], 'Modules.Psfixturescreator.Admin');
-        $this->description = $this->trans('Generate large volumes of fake data (catalog, customers, orders...) to audit PrestaShop performance.', [], 'Modules.Psfixturescreator.Admin');
+        $this->description = $this->trans('Generate large volumes of fake data (catalog, customers, orders, traffic...) to audit PrestaShop performance.', [], 'Modules.Psfixturescreator.Admin');
     }
 
     public function install(): bool

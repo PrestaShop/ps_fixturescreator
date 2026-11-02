@@ -28,7 +28,33 @@ services:
       $connection: '@doctrine.dbal.default_connection'
       $dbPrefix: '%database_prefix%'
 
+  PrestaShop\Module\PsFixturesCreator\Preset\PresetRegistry: ~
+
   # ---------------------------------------------------------------- Creators (low level builders)
+
+  PrestaShop\Module\PsFixturesCreator\Creator\CategoryCreator:
+    arguments:
+      $faker: '@Faker\Generator'
+      $langRepository: '@prestashop.core.admin.lang.repository'
+      $entityPicker: '@PrestaShop\Module\PsFixturesCreator\Creator\EntityPicker'
+
+  PrestaShop\Module\PsFixturesCreator\Creator\ManufacturerCreator:
+    arguments:
+      $faker: '@Faker\Generator'
+      $langRepository: '@prestashop.core.admin.lang.repository'
+      $entityPicker: '@PrestaShop\Module\PsFixturesCreator\Creator\EntityPicker'
+
+  PrestaShop\Module\PsFixturesCreator\Creator\SupplierCreator:
+    arguments:
+      $faker: '@Faker\Generator'
+      $langRepository: '@prestashop.core.admin.lang.repository'
+      $entityPicker: '@PrestaShop\Module\PsFixturesCreator\Creator\EntityPicker'
+
+  PrestaShop\Module\PsFixturesCreator\Creator\CustomerGroupCreator:
+    arguments:
+      $faker: '@Faker\Generator'
+      $langRepository: '@prestashop.core.admin.lang.repository'
+      $entityPicker: '@PrestaShop\Module\PsFixturesCreator\Creator\EntityPicker'
 
   PrestaShop\Module\PsFixturesCreator\Creator\SpecificPriceCreator:
     arguments:
@@ -134,53 +160,91 @@ services:
       $entityPicker: '@PrestaShop\Module\PsFixturesCreator\Creator\EntityPicker'
       $dateSpreader: '@PrestaShop\Module\PsFixturesCreator\Creator\DateSpreader'
 
+  PrestaShop\Module\PsFixturesCreator\Creator\CmsCreator:
+    arguments:
+      $faker: '@Faker\Generator'
+      $langRepository: '@prestashop.core.admin.lang.repository'
+      $entityPicker: '@PrestaShop\Module\PsFixturesCreator\Creator\EntityPicker'
+
+  PrestaShop\Module\PsFixturesCreator\Creator\StoreCreator:
+    arguments:
+      $faker: '@Faker\Generator'
+      $langRepository: '@prestashop.core.admin.lang.repository'
+
+  PrestaShop\Module\PsFixturesCreator\Creator\EmployeeCreator:
+    arguments:
+      $faker: '@Faker\Generator'
+      $hashing: '@prestashop.core.crypto.hashing'
+      $entityPicker: '@PrestaShop\Module\PsFixturesCreator\Creator\EntityPicker'
+
+  PrestaShop\Module\PsFixturesCreator\Creator\TrafficCreator:
+    arguments:
+      $faker: '@Faker\Generator'
+      $connection: '@doctrine.dbal.default_connection'
+      $dbPrefix: '%database_prefix%'
+      $entityPicker: '@PrestaShop\Module\PsFixturesCreator\Creator\EntityPicker'
+      $dateSpreader: '@PrestaShop\Module\PsFixturesCreator\Creator\DateSpreader'
+
   # ---------------------------------------------------------------- Generators (one per data type)
 
+  PrestaShop\Module\PsFixturesCreator\Generator\CategoryGenerator:
+    autowire: true
+    tags: ['ps_fixturescreator.generator']
+  PrestaShop\Module\PsFixturesCreator\Generator\ManufacturerGenerator:
+    autowire: true
+    tags: ['ps_fixturescreator.generator']
+  PrestaShop\Module\PsFixturesCreator\Generator\SupplierGenerator:
+    autowire: true
+    tags: ['ps_fixturescreator.generator']
   PrestaShop\Module\PsFixturesCreator\Generator\AttributeGenerator:
     autowire: true
     tags: ['ps_fixturescreator.generator']
-
   PrestaShop\Module\PsFixturesCreator\Generator\FeatureGenerator:
     autowire: true
     tags: ['ps_fixturescreator.generator']
-
   PrestaShop\Module\PsFixturesCreator\Generator\ProductGenerator:
     autowire: true
     tags: ['ps_fixturescreator.generator']
-
   PrestaShop\Module\PsFixturesCreator\Generator\ProductWithCombinationsGenerator:
     autowire: true
     tags: ['ps_fixturescreator.generator']
-
   PrestaShop\Module\PsFixturesCreator\Generator\SpecificPriceGenerator:
     autowire: true
     tags: ['ps_fixturescreator.generator']
-
   PrestaShop\Module\PsFixturesCreator\Generator\TagGenerator:
     autowire: true
     tags: ['ps_fixturescreator.generator']
-
+  PrestaShop\Module\PsFixturesCreator\Generator\CustomerGroupGenerator:
+    autowire: true
+    tags: ['ps_fixturescreator.generator']
   PrestaShop\Module\PsFixturesCreator\Generator\CustomerGenerator:
     autowire: true
     tags: ['ps_fixturescreator.generator']
-
   PrestaShop\Module\PsFixturesCreator\Generator\CarrierGenerator:
     autowire: true
     tags: ['ps_fixturescreator.generator']
-
   PrestaShop\Module\PsFixturesCreator\Generator\CartRuleGenerator:
     autowire: true
     tags: ['ps_fixturescreator.generator']
-
   PrestaShop\Module\PsFixturesCreator\Generator\CartGenerator:
     autowire: true
     tags: ['ps_fixturescreator.generator']
-
   PrestaShop\Module\PsFixturesCreator\Generator\OrderGenerator:
     autowire: true
     tags: ['ps_fixturescreator.generator']
-
   PrestaShop\Module\PsFixturesCreator\Generator\CustomerThreadGenerator:
+    autowire: true
+    tags: ['ps_fixturescreator.generator']
+  PrestaShop\Module\PsFixturesCreator\Generator\CmsGenerator:
+    autowire: true
+    tags: ['ps_fixturescreator.generator']
+  PrestaShop\Module\PsFixturesCreator\Generator\StoreGenerator:
+    autowire: true
+    tags: ['ps_fixturescreator.generator']
+  PrestaShop\Module\PsFixturesCreator\Generator\EmployeeGenerator:
+    autowire: true
+    tags: ['ps_fixturescreator.generator']
+  PrestaShop\Module\PsFixturesCreator\Generator\TrafficGenerator:
     autowire: true
     tags: ['ps_fixturescreator.generator']
 
@@ -210,13 +274,17 @@ services:
     tags:
       - { name: 'console.command' }
 
+  PrestaShop\Module\PsFixturesCreator\Command\PresetCommand:
+    autowire: true
+    tags:
+      - { name: 'console.command' }
+
   PrestaShop\Module\PsFixturesCreator\Command\StatsCommand:
     autowire: true
     tags:
       - { name: 'console.command' }
 
   # Legacy commands, kept for backward compatibility
-
   PrestaShop\Module\PsFixturesCreator\Command\ShopCreatorCommand:
     arguments:
       $customerCreator: '@PrestaShop\Module\PsFixturesCreator\Creator\CustomerCreator'

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace PrestaShop\Module\PsFixturesCreator\Command;
 
 use PrestaShop\Module\PsFixturesCreator\Generator\GeneratorRegistry;
+use PrestaShop\Module\PsFixturesCreator\Preset\PresetRegistry;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -13,18 +14,20 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 class ListGeneratorsCommand extends Command
 {
     private GeneratorRegistry $registry;
+    private PresetRegistry $presets;
 
-    public function __construct(GeneratorRegistry $registry)
+    public function __construct(GeneratorRegistry $registry, PresetRegistry $presets)
     {
         parent::__construct(null);
         $this->registry = $registry;
+        $this->presets = $presets;
     }
 
     protected function configure(): void
     {
         $this
             ->setName('prestashop:fixtures:list')
-            ->setDescription('List the available fixture generators and their options')
+            ->setDescription('List the available fixture generators, their options and the presets')
         ;
     }
 
@@ -51,6 +54,11 @@ class ListGeneratorsCommand extends Command
             }
         }
 
+        $io->section('Presets (prestashop:fixtures:preset <name>)');
+        foreach ($this->presets->all() as $name => $preset) {
+            $io->writeln(sprintf('  <info>%s</info>  %s', str_pad($name, 10), $preset['description']));
+        }
+        $io->newLine();
 
         return 0;
     }
